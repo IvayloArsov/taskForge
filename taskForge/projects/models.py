@@ -11,12 +11,12 @@ class Project(models.Model):
     description = models.TextField()
     created_by = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
-        related_name='projects_created'
+        on_delete=models.PROTECT,
+        related_name='created_projects'
     )
     members = models.ManyToManyField(
         User,
-        related_name='projects_member_of'
+        related_name='projects'
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
@@ -25,7 +25,7 @@ class Project(models.Model):
         User,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='projects_lead'
+        related_name='led_projects'
     )
 
     def __str__(self):
