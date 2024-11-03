@@ -1,0 +1,73 @@
+/* Navbar Styles */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.08);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #2563eb;
+}
+
+.nav-link {
+    font-weight: 500;
+}
+
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,.1);
+}
+
+/* Card Styles */
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
+/* Form Styles */
+.form-control:focus {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 0.25rem rgba(37,99,235,.25);
+}
+
+/* Auth Pages Specific Styles */
+.auth-card {
+    max-width: 400px;
+    margin: auto;
+}
+
+.auth-card .card-body {
+    padding: 2rem;
+}
+
+/* Custom Input Group Focus State */
+.input-group:focus-within {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 0.25rem rgba(37,99,235,.25);
+}
+
+/* Custom Alert Styles */
+.alert-dismissible {
+    padding-right: 3rem;
+}
+
+/* Footer Styles */
+.footer {
+    background-color: #f8f9fa;
+    padding: 1.5rem 0;
+    margin-top: auto;
+}

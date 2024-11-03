@@ -1,30 +1,84 @@
 {% extends 'common/base.html' %}
-{% load static  %}
+{% load static %}
+
+{% block extra_css %}
+{#    page specific css if needed #}
+{% endblock %}
+
 {% block content %}
-    <script src="{% static 'js/toggle-password.js' %}"></script>
-
-    <div class="container">
-        <h2>Login</h2>
-        <form method="post">
+<div class="container">
+  <div class="row justify-content-center min-vh-100 align-items-center">
+    <div class="col-12 col-md-6 col-lg-5">
+      <div class="card shadow-sm border-0 auth-card">
+        <div class="card-body">
+          <h2 class="text-center mb-4">Welcome Back</h2>
+          
+          {% if form.non_field_errors %}
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {% for error in form.non_field_errors %}
+              {{ error }}
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endif %}
+          
+          <form method="post" class="needs-validation" novalidate>
             {% csrf_token %}
-            <div class="form-group">
-                {{ form.username.label_tag }}
+            
+            <div class="mb-3">
+              {{ form.username.label_tag }}
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-person"></i>
+                </span>
                 {{ form.username }}
-            </div>
-            <div class="form-group">
-                {{ form.password.label_tag }}
-                <div class="input-group">
-                    {{ form.password }}
-                    <button class="btn btn-outline-secondary" onclick="togglePasswordVisibility()">
-                        <i id="password-toggle-icon" class="fas fa-eye"></i>
-                    </button>
+              </div>
+              {% if form.username.errors %}
+                <div class="text-danger small mt-1">
+                  {% for error in form.username.errors %}{{ error }}{% endfor %}
                 </div>
+              {% endif %}
             </div>
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
-    </div>
 
-    
-    
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMzd8bXksz+6GmH2J3lJ6v5lNbFbShhc0xX5hL6" crossorigin="anonymous">
+            <div class="mb-4">
+              {{ form.password.label_tag }}
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-lock"></i>
+                </span>
+                {{ form.password }}
+                <button class="btn btn-outline-secondary" type="button" 
+                        data-toggle="password" 
+                        data-target="#id_password" 
+                        data-icon="#password-toggle-icon">
+                  <i id="password-toggle-icon" class="bi bi-eye"></i>
+                </button>
+              </div>
+              {% if form.password.errors %}
+                <div class="text-danger small mt-1">
+                  {% for error in form.password.errors %}{{ error }}{% endfor %}
+                </div>
+              {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+              <i class="bi bi-box-arrow-in-right me-2"></i>Log In
+            </button>
+
+            <div class="text-center">
+              <small class="text-muted">
+                Don't have an account? 
+                <a href="{% url 'register' %}" class="text-decoration-none">Register here</a>
+              </small>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/auth.js' %}"></script>
 {% endblock %}
