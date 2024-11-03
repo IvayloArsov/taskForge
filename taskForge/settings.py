@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'taskForge.accounts.apps.AccountsConfig',
-    'taskForge.projects.apps.ProjectsConfig'
+    'taskForge.projects.apps.ProjectsConfig',
+    'taskForge.tickets.apps.TicketsConfig'
 ]
 
 MIDDLEWARE = [
