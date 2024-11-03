@@ -1,0 +1,30 @@
+{% extends 'common/base.html' %}
+{% load static  %}
+{% block content %}
+    <script src="{% static 'js/toggle-password.js' %}"></script>
+
+    <div class="container">
+        <h2>Login</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div class="form-group">
+                {{ form.password.label_tag }}
+                <div class="input-group">
+                    {{ form.password }}
+                    <button class="btn btn-outline-secondary" onclick="togglePasswordVisibility()">
+                        <i id="password-toggle-icon" class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+
+    
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMzd8bXksz+6GmH2J3lJ6v5lNbFbShhc0xX5hL6" crossorigin="anonymous">
+{% endblock %}
