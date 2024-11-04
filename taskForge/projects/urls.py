@@ -8,7 +8,7 @@ urlpatterns = [
     path('', ProjectListView.as_view(), name='list'),
     path('create/', ProjectCreateView.as_view(), name='create'),
     path('<int:pk>/', include([
-        path('',ProjectDetailView.as_view(), name='details' ),
+        path('', ProjectDetailView.as_view(), name='details'),
         path('edit/', ProjectUpdateView.as_view(), name='edit'),
         path('delete/', ProjectDeleteView.as_view(), name='delete')
     ]))

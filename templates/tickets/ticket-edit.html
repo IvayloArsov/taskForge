@@ -1,0 +1,150 @@
+{% extends 'common/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container py-4">
+   <div class="row justify-content-center">
+       <div class="col-md-8">
+           <div class="card shadow-sm">
+               <div class="card-body">
+                   <div class="d-flex justify-content-between align-items-center mb-4">
+                       <h2 class="card-title">Edit Ticket</h2>
+                       {% if user.is_staff or user == ticket.created_by %}
+                           <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal">
+                               Delete Ticket
+                           </button>
+                       {% endif %}
+                   </div>
+                   
+                   <form method="post">
+                       {% csrf_token %}
+                       
+                       <div class="mb-3">
+                           <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                           {{ form.title }}
+                           {% if form.title.errors %}
+                               <div class="text-danger small mt-1">
+                                   {% for error in form.title.errors %}
+                                       {{ error }}
+                                   {% endfor %}
+                               </div>
+                           {% endif %}
+                       </div>
+
+                       <div class="mb-3">
+                           <label for="{{ form.project.id_for_label }}" class="form-label">Project</label>
+                           {{ form.project }}
+                           {% if form.project.errors %}
+                               <div class="text-danger small mt-1">
+                                   {% for error in form.project.errors %}
+                                       {{ error }}
+                                   {% endfor %}
+                               </div>
+                           {% endif %}
+                       </div>
+
+                       <div class="row mb-3">
+                           <div class="col-md-6">
+                               <label for="{{ form.priority.id_for_label }}" class="form-label">Priority</label>
+                               {{ form.priority }}
+                               {% if form.priority.errors %}
+                                   <div class="text-danger small mt-1">
+                                       {% for error in form.priority.errors %}
+                                           {{ error }}
+                                       {% endfor %}
+                                   </div>
+                               {% endif %}
+                               {% if form.priority.help_text %}
+                                   <div class="form-text">{{ form.priority.help_text }}</div>
+                               {% endif %}
+                           </div>
+                           <div class="col-md-6">
+                               <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                               {{ form.status }}
+                               {% if form.status.errors %}
+                                   <div class="text-danger small mt-1">
+                                       {% for error in form.status.errors %}
+                                           {{ error }}
+                                       {% endfor %}
+                                   </div>
+                               {% endif %}
+                           </div>
+                       </div>
+
+                       <div class="row mb-3">
+                           <div class="col-md-6">
+                               <label for="{{ form.assigned_to.id_for_label }}" class="form-label">Assign To</label>
+                               {{ form.assigned_to }}
+                               {% if form.assigned_to.errors %}
+                                   <div class="text-danger small mt-1">
+                                       {% for error in form.assigned_to.errors %}
+                                           {{ error }}
+                                       {% endfor %}
+                                   </div>
+                               {% endif %}
+                               {% if form.assigned_to.help_text %}
+                                   <div class="form-text">{{ form.assigned_to.help_text }}</div>
+                               {% endif %}
+                           </div>
+                           <div class="col-md-6">
+                               <label for="{{ form.due_date.id_for_label }}" class="form-label">Due Date</label>
+                               {{ form.due_date }}
+                               {% if form.due_date.errors %}
+                                   <div class="text-danger small mt-1">
+                                       {% for error in form.due_date.errors %}
+                                           {{ error }}
+                                       {% endfor %}
+                                   </div>
+                               {% endif %}
+                               {% if form.due_date.help_text %}
+                                   <div class="form-text">{{ form.due_date.help_text }}</div>
+                               {% endif %}
+                           </div>
+                       </div>
+
+                       <div class="mb-4">
+                           <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                           {{ form.description }}
+                           {% if form.description.errors %}
+                               <div class="text-danger small mt-1">
+                                   {% for error in form.description.errors %}
+                                       {{ error }}
+                                   {% endfor %}
+                               </div>
+                           {% endif %}
+                       </div>
+
+                       <div class="d-flex justify-content-end gap-2">
+                           <a href="{% url 'tickets:details' ticket.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                           <button type="submit" class="btn btn-primary">Save Changes</button>
+                       </div>
+                   </form>
+               </div>
+           </div>
+       </div>
+   </div>
+</div>
+
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+   <div class="modal-dialog">
+       <div class="modal-content">
+           <div class="modal-header">
+               <h5 class="modal-title">Confirm Delete</h5>
+               <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+           </div>
+           <div class="modal-body">
+               <p>Are you sure you want to delete the ticket "{{ ticket.title }}"?</p>
+               <p class="text-danger mb-0">This action cannot be undone.</p>
+           </div>
+           <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+               <form method="post" action="{% url 'tickets:delete' ticket.pk %}">
+                   {% csrf_token %}
+                   <button type="submit" class="btn btn-danger">Delete Ticket</button>
+               </form>
+           </div>
+       </div>
+   </div>
+</div>
+
+{% endblock %}
