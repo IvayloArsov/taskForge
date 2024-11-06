@@ -1,0 +1,35 @@
+<div class="col-md-4">
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Ticket Details</h5>
+
+            <div class="mb-3">
+                <h6 class="text-muted">Assigned To</h6>
+                <p class="mb-0">
+                    {% if ticket.assigned_to %}
+                        {{ ticket.assigned_to.get_full_name }}
+                    {% else %}
+                        <span class="text-muted">Unassigned</span>
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="mb-3">
+                <h6 class="text-muted">Created By</h6>
+                <p class="mb-0">{{ ticket.created_by.get_full_name }}</p>
+            </div>
+
+            <div class="mb-3">
+                <h6 class="text-muted">Created On</h6>
+                <p class="mb-0">{{ ticket.created_at|date:"M d, Y H:i" }}</p>
+            </div>
+
+            {% if ticket.updated_at != ticket.created_at %}
+                <div class="mb-3">
+                    <h6 class="text-muted">Last Updated</h6>
+                    <p class="mb-0">{{ ticket.updated_at|date:"M d, Y H:i" }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

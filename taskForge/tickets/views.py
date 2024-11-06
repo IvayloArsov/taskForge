@@ -20,7 +20,7 @@ class TicketListView(LoginRequiredMixin, ListView):
 
 class TicketDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Ticket
-    template_name = 'tickets/ticket-details.html'
+    template_name = 'tickets/ticket details/ticket-details.html'
     context_object_name = 'ticket'
 
     def test_func(self):
@@ -37,6 +37,9 @@ class TicketCreateView(LoginRequiredMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
+        project_id = self.request.GET.get('project')
+        if project_id:
+            kwargs['initial_project_id'] = project_id
         return kwargs
 
     def form_valid(self, form):

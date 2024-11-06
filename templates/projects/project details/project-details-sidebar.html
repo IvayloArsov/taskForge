@@ -1,0 +1,19 @@
+<div class="col-md-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Team Members</h5>
+            <ul class="list-group list-group-flush">
+                {% for member in project.members.all %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ member.get_full_name }}
+                        {% if member == project.lead_by %}
+                            <span class="badge bg-primary rounded-pill">Lead</span>
+                        {% endif %}
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">No team members yet</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

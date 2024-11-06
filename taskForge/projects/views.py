@@ -51,7 +51,7 @@ class ProjectDetailView(LoginRequiredMixin, StaffRequiredMixin, DetailView):
     Only workers that are included in the project can view the details
     """
     model = Project
-    template_name = 'projects/project-details.html'
+    template_name = 'projects/project details/project-details.html'
     context_object_name = 'project'
 
     def test_func(self):

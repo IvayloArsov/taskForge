@@ -29,6 +29,7 @@ class TicketForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
+        initial_project_id = kwargs.pop('initial_project_id', None)
         super().__init__(*args, **kwargs)
 
         self.fields['title'].widget.attrs.update({
@@ -54,6 +55,15 @@ class TicketForm(forms.ModelForm):
             project = self.instance.project if self.instance.pk else None
             if project:
                 self.fields['assigned_to'].queryset = project.members.all()
+
+        if initial_project_id:
+            # selects the same project when a ticket is being created from the project/id/details view
+            try:
+                project = Project.objects.get(pk=initial_project_id)
+                self.fields['project'].initial = project
+                self.fields['assigned_to'].queryset = project.members.all()
+            except Project.DoesNotExist:
+                pass
 
         self.fields['due_date'].help_text = "When should this ticket be completed?"
         self.fields['assigned_to'].help_text = "Who should work on this ticket?"

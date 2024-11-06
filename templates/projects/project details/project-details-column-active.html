@@ -1,0 +1,50 @@
+<div class="col-md-6">
+    <div class="card shadow-sm">
+        <div class="card-header bg-transparent">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Active Tickets</h5>
+                <a href="{% url 'tickets:create' %}?project={{ project.pk }}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus"></i> New Ticket
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            {% for ticket in active_tickets %}
+                <div class="ticket-card mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="card-title mb-1">
+                                    <a href="{% url 'tickets:details' ticket.pk %}"
+                                       class="text-decoration-none">
+                                        {{ ticket.title }}
+                                    </a>
+                                </h6>
+                                <span class="badge {% if ticket.priority == 'high' %}bg-danger
+                                                         {% elif ticket.priority == 'medium' %}bg-warning
+                                                         {% else %}bg-success{% endif %}">
+                                            {{ ticket.get_priority_display }}
+                                        </span>
+                            </div>
+                            <p class="card-text small text-muted mb-2">{{ ticket.description|truncatechars:100 }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    {% if ticket.assigned_to %}
+                                        Assigned to: {{ ticket.assigned_to.get_full_name }}
+                                    {% else %}
+                                        Unassigned
+                                    {% endif %}
+                                </small>
+                                <small class="text-muted">
+                                    Due: {{ ticket.due_date|default:"No due date" }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-muted text-center my-4">No active tickets</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
