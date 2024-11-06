@@ -55,8 +55,24 @@ class ProjectDetailView(LoginRequiredMixin, StaffRequiredMixin, DetailView):
     context_object_name = 'project'
 
     def test_func(self):
-        project=self.get_object()
+        project = self.get_object()
         return self.request.user.is_staff or self.request.user in project.members.all()
+
+    def get_context_data(self, **kwargs):
+        """
+        Separates tickets by status of ongoing or completed
+
+        """
+        context = super().get_context_data(**kwargs)
+        active_statuses = ['open', 'in_progress']
+        completed_statuses = ['resolved', 'closed']
+        context['active_tickets'] = self.object.tickets.filter(
+            status__in=active_statuses
+        ).order_by('-created_at')
+        context['completed_tickets'] = self.object.tickets.filter(
+            status__in=completed_statuses
+        ).order_by('-created_at')
+        return context
 
 
 class ProjectUpdateView(LoginRequiredMixin, StaffRequiredMixin, UpdateView):
@@ -72,6 +88,7 @@ class ProjectUpdateView(LoginRequiredMixin, StaffRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('projects:details', kwargs={'pk': self.object.pk})
+
 
 class ProjectDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Project
