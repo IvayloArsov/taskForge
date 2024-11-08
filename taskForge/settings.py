@@ -47,7 +47,8 @@ INSTALLED_APPS = [
 
     'taskForge.accounts.apps.AccountsConfig',
     'taskForge.projects.apps.ProjectsConfig',
-    'taskForge.tickets.apps.TicketsConfig'
+    'taskForge.tickets.apps.TicketsConfig',
+    'taskForge.comments.apps.CommentsConfig'
 ]
 
 MIDDLEWARE = [

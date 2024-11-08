@@ -1,0 +1,98 @@
+{% extends 'common/base.html' %}
+{% block content %}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="card-title mb-0">
+                                <i class="bi bi-bug me-2"></i>{{ bug.title }}
+                            </h2>
+                            {% if not bug.is_approved %}
+                                <span class="badge bg-warning mt-2">Pending Review</span>
+                            {% else %}
+                                <span class="badge bg-success mt-2">Approved</span>
+                            {% endif %}
+                        </div>
+                        {% if user.is_staff and not bug.is_approved %}
+                            <div>
+                                <form method="post" action="{% url 'tickets:approve-bug' bug.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i class="bi bi-check-lg me-1"></i>Approve
+                                    </button>
+                                </form>
+                                <form method="post" action="{% url 'tickets:deny-bug' bug.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="bi bi-x-lg me-1"></i>Deny
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="text-muted">Description</h5>
+                        <p>{{ bug.description }}</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Project</h6>
+                            <p><a href="{% url 'projects:details' bug.project.pk %}" class="text-decoration-none">
+                                {{ bug.project.name }}
+                            </a></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Priority</h6>
+                            <span class="badge 
+                                {% if bug.priority == 'high' %}bg-danger
+                                {% elif bug.priority == 'medium' %}bg-warning
+                                {% else %}bg-success{% endif %}">
+                                {{ bug.get_priority_display }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Reported By</h6>
+                            <p>{{ bug.created_by.get_full_name }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Reported On</h6>
+                            <p>{{ bug.created_at|date:"M d, Y H:i" }}</p>
+                        </div>
+                    </div>
+
+                    {% if bug.is_approved %}
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Status</h6>
+                                <span class="badge 
+                                    {% if bug.status == 'open' %}bg-secondary
+                                    {% elif bug.status == 'in_progress' %}bg-primary
+                                    {% elif bug.status == 'resolved' %}bg-success
+                                    {% else %}bg-dark{% endif %}">
+                                    {{ bug.get_status_display }}
+                                </span>
+                            </div>
+                            {% if bug.assigned_to %}
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Assigned To</h6>
+                                    <p>{{ bug.assigned_to.get_full_name }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

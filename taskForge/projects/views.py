@@ -1,7 +1,3 @@
-from keyword import kwlist
-from pyexpat.errors import messages
-
-from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -45,36 +41,6 @@ class ProjectCreateView(LoginRequiredMixin, StaffRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class ProjectDetailView(LoginRequiredMixin, StaffRequiredMixin, DetailView):
-    """
-    Staff and Admin can do full crud
-    Only workers that are included in the project can view the details
-    """
-    model = Project
-    template_name = 'projects/project details/project-details.html'
-    context_object_name = 'project'
-
-    def test_func(self):
-        project = self.get_object()
-        return self.request.user.is_staff or self.request.user in project.members.all()
-
-    def get_context_data(self, **kwargs):
-        """
-        Separates tickets by status of ongoing or completed
-
-        """
-        context = super().get_context_data(**kwargs)
-        active_statuses = ['open', 'in_progress']
-        completed_statuses = ['resolved', 'closed']
-        context['active_tickets'] = self.object.tickets.filter(
-            status__in=active_statuses
-        ).order_by('-created_at')
-        context['completed_tickets'] = self.object.tickets.filter(
-            status__in=completed_statuses
-        ).order_by('-created_at')
-        return context
-
-
 class ProjectUpdateView(LoginRequiredMixin, StaffRequiredMixin, UpdateView):
     """
     Only staff and admin can do full crud
@@ -100,3 +66,55 @@ class ProjectDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         result = super().delete(request, *args, **kwargs)
         return result
+
+
+class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Project
+    template_name = 'projects/project details/project-details.html'
+    context_object_name = 'project'
+
+    def test_func(self):
+        project = self.get_object()
+        return (self.request.user.is_staff or
+                self.request.user in project.members.all())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        show_type = self.request.GET.get('show', 'tickets')
+
+        active_statuses = ['open', 'in_progress']
+        completed_statuses = ['resolved', 'closed']
+
+        # shows tickets that need to be approved/denied to staff/admin roles only
+        if self.request.user.is_staff:
+            context['pending_bugs'] = self.object.bugreports.filter(
+                is_approved=False,
+                status__in=active_statuses
+            ).order_by('-created_at')
+
+
+        # shows active & completed tickets
+        if show_type == 'tickets':
+            context['active_tickets'] = self.object.tickets.filter(
+                status__in=active_statuses
+            ).order_by('-created_at')
+
+            context['completed_tickets'] = self.object.tickets.filter(
+                status__in=completed_statuses
+            ).order_by('-updated_at')
+
+        # shows pending & ongoing bug reports
+        if show_type == 'bugs':
+            if self.request.user.is_staff:
+                context['pending_bugs'] = self.object.bugreports.filter(
+                    is_approved=False,
+                    status__in=active_statuses
+                ).order_by('-created_at')
+
+            context['active_bugs'] = self.object.bugreports.filter(
+                is_approved=True,
+                status__in=active_statuses
+            ).order_by('-created_at')
+
+        context['show_type'] = show_type
+        return context

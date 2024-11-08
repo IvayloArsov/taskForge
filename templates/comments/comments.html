@@ -1,0 +1,43 @@
+<div class="card shadow-sm">
+    <div class="card-header bg-transparent">
+        <h5 class="mb-0">Comments</h5>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{% url 'comments:create' ticket_id=ticket.pk %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ comment_form }}
+            </div>
+            <button type="submit" class="btn btn-primary">Add Comment</button>
+        </form>
+
+        <hr class="my-4">
+
+        <div class="comments-list">
+            {% for comment in ticket.comments.all %}
+                <div class="comment mb-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>{{ comment.author.get_full_name }}</strong>
+                            <small class="text-muted ms-2">{{ comment.created_at|date:"M d, Y H:i" }}</small>
+                        </div>
+                        {% if user == comment.author or user.is_staff %}
+                            <form method="post" action="{% url 'comments:delete' comment.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link text-danger p-0">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                    <p class="mb-0 mt-2">{{ comment.content }}</p>
+                </div>
+                {% if not forloop.last %}
+                    <hr class="my-3">
+                {% endif %}
+            {% empty %}
+                <p class="text-muted text-center">No comments yet</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>

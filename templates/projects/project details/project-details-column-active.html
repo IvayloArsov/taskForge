@@ -2,29 +2,65 @@
     <div class="card shadow-sm">
         <div class="card-header bg-transparent">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Active Tickets</h5>
+                <h5 class="mb-0">Active Items</h5>
                 <a href="{% url 'tickets:create' %}?project={{ project.pk }}" class="btn btn-primary btn-sm">
                     <i class="bi bi-plus"></i> New Ticket
                 </a>
             </div>
         </div>
         <div class="card-body">
+            {% if user.is_staff %}
+                {% for bug in pending_bugs %}
+                    <div class="ticket-card mb-3">
+                        <div class="card border-warning">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="card-title mb-1">
+                                        {{ bug.title }}
+                                        <span class="badge bg-warning ms-2">Pending Review</span>
+                                    </h6>
+                                    <div class="d-flex gap-2">
+                                        <form method="post" action="{% url 'tickets:approve-bug' bug.pk %}"
+                                              class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="bi bi-check-lg"></i>
+                                            </button>
+                                        </form>
+                                        <form method="post" action="{% url 'tickets:deny-bug' bug.pk %}"
+                                              class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <p class="card-text small text-muted mb-2">{{ bug.description|truncatechars:100 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">Reported by: {{ bug.created_by.get_full_name }}</small>
+                                    <small class="text-muted">{{ bug.created_at|date:"M d, Y" }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
             {% for ticket in active_tickets %}
                 <div class="ticket-card mb-3">
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h6 class="card-title mb-1">
-                                    <a href="{% url 'tickets:details' ticket.pk %}"
-                                       class="text-decoration-none">
+                                    <a href="{% url 'tickets:details' ticket.pk %}" class="text-decoration-none">
                                         {{ ticket.title }}
                                     </a>
                                 </h6>
                                 <span class="badge {% if ticket.priority == 'high' %}bg-danger
-                                                         {% elif ticket.priority == 'medium' %}bg-warning
-                                                         {% else %}bg-success{% endif %}">
-                                            {{ ticket.get_priority_display }}
-                                        </span>
+                                     {% elif ticket.priority == 'medium' %}bg-warning
+                                     {% else %}bg-success{% endif %}">
+                        {{ ticket.get_priority_display }}
+                    </span>
                             </div>
                             <p class="card-text small text-muted mb-2">{{ ticket.description|truncatechars:100 }}</p>
                             <div class="d-flex justify-content-between align-items-center">
@@ -35,15 +71,13 @@
                                         Unassigned
                                     {% endif %}
                                 </small>
-                                <small class="text-muted">
-                                    Due: {{ ticket.due_date|default:"No due date" }}
-                                </small>
+                                <small class="text-muted">Due: {{ ticket.due_date|default:"No due date" }}</small>
                             </div>
                         </div>
                     </div>
                 </div>
             {% empty %}
-                <p class="text-muted text-center my-4">No active tickets</p>
+                <p class="text-muted text-center my-4">No active items</p>
             {% endfor %}
         </div>
     </div>

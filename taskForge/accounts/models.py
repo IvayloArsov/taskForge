@@ -2,11 +2,12 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.core.exceptions import ValidationError
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from taskForge.accounts.choices import UserRoleChoices
 
 
-# Create your models here.
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, first_name, last_name, password=None):
         if not email or not password:
@@ -28,6 +29,7 @@ class CustomUserManager(BaseUserManager):
         user.is_superuser = True
         user.save()
         return user
+
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
@@ -65,14 +67,9 @@ class Profile(models.Model):
     role = models.CharField(
         max_length=20,
         choices=UserRoleChoices,
-        default='END_USER'
+        default='end_user'
     )
 
     def __str__(self):
         return f'{self.user.first_name}\'s Profile'
 
-    def save(self, *args, **kwargs):
-        if not self.pk or self.user.is_superuser or self.user.is_staff:
-            super().save(*args, **kwargs)
-        else:
-            raise ValidationError('Only administrators can modify profiles')

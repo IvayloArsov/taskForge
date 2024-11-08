@@ -1,0 +1,114 @@
+{% extends 'common/base.html' %}
+{% block content %}
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3 class="card-title mb-0">{{ profile.user.get_full_name }}</h3>
+
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="text-muted">Username</h6>
+                            <p class="mb-0">{{ profile.user.username }}</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="text-muted">Email</h6>
+                            <p class="mb-0">{{ profile.user.email }}</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="text-muted">Role</h6>
+                            <span class="badge bg-primary">{{ profile.get_role_display }}</span>
+                        </div>
+
+                        {% if profile.project %}
+                            <div class="mb-3">
+                                <h6 class="text-muted">Current Project</h6>
+                                <a href="{% url 'projects:details' profile.project.pk %}" class="text-decoration-none">
+                                    {{ profile.project.name }}
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0">Projects</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for project in projects %}
+                            <div class="mb-3">
+                                <a href="{% url 'projects:details' project.pk %}" class="text-decoration-none">
+                                    {{ project.name }}
+                                </a>
+                                {% if project in user.led_projects.all %}
+                                    <span class="badge bg-success ms-2">Project Lead</span>
+                                {% endif %}
+                            </div>
+                        {% empty %}
+                            <p class="text-muted text-center mb-0">Not a member of any projects</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0">Assigned Tickets</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for ticket in assigned_tickets %}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="{% url 'tickets:details' ticket.pk %}" class="text-decoration-none">
+                                        {{ ticket.title }}
+                                    </a>
+                                    <span class="badge {% if ticket.priority == 'high' %}bg-danger
+                                              {% elif ticket.priority == 'medium' %}bg-warning
+                                              {% else %}bg-success{% endif %}">
+                                   {{ ticket.get_priority_display }}
+                               </span>
+                                </div>
+                                <small class="text-muted">Project: {{ ticket.project.name }}</small>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted text-center mb-0">No assigned tickets</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0">Created Tickets</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for ticket in created_tickets %}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="{% url 'tickets:details' ticket.pk %}" class="text-decoration-none">
+                                        {{ ticket.title }}
+                                    </a>
+                                    <span class="badge {% if ticket.status == 'open' %}bg-secondary
+                                              {% elif ticket.status == 'in_progress' %}bg-primary
+                                              {% elif ticket.status == 'resolved' %}bg-success
+                                              {% else %}bg-dark{% endif %}">
+                                   {{ ticket.get_status_display }}
+                               </span>
+                                </div>
+                                <small class="text-muted">Project: {{ ticket.project.name }}</small>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted text-center mb-0">No tickets created</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

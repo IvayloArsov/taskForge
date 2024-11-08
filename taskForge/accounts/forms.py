@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django import forms
 
+from taskForge.accounts.models import Profile
+
 
 class CustomUserCreationForm(UserCreationForm):
     first_name = forms.CharField(
@@ -79,3 +81,14 @@ class UserLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.error_messages['invalid_login'] = 'The username or password you entered is incorrect. Please try again.'
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['role']
+        widgets = {
+            'role': forms.Select(attrs={
+                'class': 'form-control'
+            })
+        }

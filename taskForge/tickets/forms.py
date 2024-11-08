@@ -1,4 +1,4 @@
-from .models import Ticket
+from .models import Ticket, BugReport
 from django import forms
 from taskForge.projects.models import Project
 
@@ -78,3 +78,34 @@ class TicketForm(forms.ModelForm):
             self.add_error('assigned_to',
                            'The assigned user must be a member of the project.')
         return cleaned_data
+
+
+class BugReportForm(forms.ModelForm):
+    class Meta:
+        model = BugReport
+        fields = ['title', 'description', 'project', 'priority']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Brief description of the bug'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 5,
+                'placeholder': 'Please include:\n- Steps to reproduce\n- Expected behavior\n- Actual behavior'
+            }),
+            'project': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'priority': forms.Select(attrs={
+                'class': 'form-control'
+            })
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+        if user and not user.is_staff:
+            # Only show projects where user is a member
+            self.fields['project'].queryset = Project.objects.filter(members=user)

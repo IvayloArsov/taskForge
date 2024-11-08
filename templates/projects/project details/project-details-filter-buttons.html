@@ -1,0 +1,15 @@
+<div class="row mt-4">
+    <div class="col-12 mb-3">
+        <div class="btn-group" role="group" aria-label="Toggle view type">
+            <button type="button"
+                    class="btn btn-outline-primary {% if show_type == 'tickets' %}active{% endif %}"
+                    onclick="window.location.href='?show=tickets'">
+                Tickets
+            </button>
+            <button type="button"
+                    class="btn btn-outline-primary {% if show_type == 'bugs' %}active{% endif %}"
+                    onclick="window.location.href='?show=bugs'">
+                Bug Reports
+            </button>
+        </div>
+    </div>

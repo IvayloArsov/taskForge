@@ -36,12 +36,23 @@
             </div>
             <!-- Team members list box -->
             {% include 'projects/project details/project-details-sidebar.html' %}
-            <div class="row mt-4">
-                <!-- Active Tickets column -->
-                {% include 'projects/project details/project-details-column-active.html' %}
+            <!-- Filter buttons -->
+            {% include 'projects/project details/project-details-filter-buttons.html' %}
 
-                <!-- Completed Tickets column -->
-                {% include 'projects/project details/project-details-column-completed.html' %}
+
+            <div class="row mt-4">
+                <!-- Active Items column -->
+                {% if show_type == 'tickets' or show_type == 'all' %}
+                    {% include 'projects/project details/project-details-column-active.html' %}
+                {% endif %}
+                {% if show_type == 'bugs' or show_type == 'all' %}
+                    {% include 'projects/project details/active_bugs.html' %}
+                {% endif %}
+
+                <!-- Completed Items column -->
+                {% if show_type == 'tickets' or show_type == 'all' %}
+                    {% include 'projects/project details/project-details-column-completed.html' %}
+                {% endif %}
 
             </div>
         </div>

@@ -5,6 +5,10 @@ UserModel = get_user_model()
 
 
 class EmailOrUserBackend(ModelBackend):
+    """
+    Allows users to login with either a username or email
+    Shamelessly appropriated from our esteemed lecturer
+    """
     def authenticate(self, request, username=None, password=None, **kwargs):
         if username is None:
             username = kwargs.get(UserModel.USERNAME_FIELD)
