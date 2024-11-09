@@ -6,40 +6,46 @@ from taskForge.accounts.models import Profile
 
 
 class CustomUserCreationForm(UserCreationForm):
-    first_name = forms.CharField(
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'First Name'
-        })
-    )
-    last_name = forms.CharField(
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Last Name'
-        })
-    )
     username = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Choose a username'
+            'placeholder': ' ',
+            'id': 'floatingUsername'
         })
     )
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Your email address'
+            'placeholder': ' ',
+            'id': 'floatingEmail'
+        })
+    )
+    first_name = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': ' ',
+            'id': 'floatingFirstName'
+        })
+    )
+    last_name = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': ' ',
+            'id': 'floatingLastName'
         })
     )
     password1 = forms.CharField(
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Choose a password'
+            'placeholder': ' ',
+            'id': 'floatingPassword'
         })
     )
     password2 = forms.CharField(
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Confirm password'
+            'placeholder': ' ',
+            'id': 'floatingPasswordConfirm'
         })
     )
 
@@ -47,30 +53,18 @@ class CustomUserCreationForm(UserCreationForm):
         model = get_user_model()
         fields = ['username', 'email', 'first_name', 'last_name']
 
-
 class UserLoginForm(AuthenticationForm):
     username = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control',
-                'placeholder': 'Username or Email',
-                'id': 'id_username',
-                'autofocus': True
-            }
-        ),
-        label='Username or Email'
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '',
+        })
     )
-
     password = forms.CharField(
-        widget=forms.PasswordInput(
-            attrs={
-                'class': 'form-control',
-                'placeholder': 'Password',
-                'id': 'id_password',
-                'autocomplete': 'current-password'
-            }
-        ),
-        label='Password'
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': '',
+        })
     )
 
     error_messages = {
