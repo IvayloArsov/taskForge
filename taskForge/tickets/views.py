@@ -1,8 +1,10 @@
+from itertools import chain
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404, redirect
-from django.template.base import kwarg_re
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.utils.translation.template import context_re
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 
 from .forms import TicketForm, BugReportForm
@@ -43,6 +45,14 @@ class TicketCreateView(LoginRequiredMixin, CreateView):
     model = Ticket
     form_class = TicketForm
     template_name = 'tickets/ticket-create.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context['user_projects'] = Project.objects.filter(members=user)
+        context['user_role'] = user.profile.role
+        context['project_id'] = self.request.GET.get('project')
+        return context
 
     def test_func(self):
         return not self.request.user.profile.role == UserRoleChoices.END_USER
@@ -91,7 +101,6 @@ class TicketDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Ticket
     template_name = 'tickets/ticket-delete.html'
 
-
     def test_func(self):
         """
         Only Ticket creator or Admin/Manager can delete
@@ -105,16 +114,29 @@ class TicketDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def get_success_url(self):
         return f"{reverse_lazy('projects:details', kwargs={'pk': self.object.project.pk})}?view=board"
 
+
 class BugReportCreateView(LoginRequiredMixin, CreateView):
     model = BugReport
     form_class = BugReportForm
     template_name = 'tickets/bug-report-creation.html'
+
+    def get_initial(self):
+        initial = super().get_initial()
+        project_id = self.request.GET.get('project')
+        if project_id:
+            try:
+                project = Project.objects.get(pk=project_id)
+                initial['project'] = project
+            except Project.DoesNotExist:
+                pass
+        return initial
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         context['user_projects'] = Project.objects.filter(members=user)
         context['user_role'] = user.profile.role
+        context['project_id'] = self.request.GET.get('project')
         return context
 
     def form_valid(self, form):
@@ -123,6 +145,7 @@ class BugReportCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return f"{reverse_lazy('projects:details', kwargs={'pk': self.object.project.pk})}?view=board"
+
 
 class BugReportApproveView(LoginRequiredMixin, View):
     def post(self, request, pk):
@@ -145,6 +168,7 @@ class BugReportApproveView(LoginRequiredMixin, View):
         bug.save()
 
         return redirect(f"{reverse_lazy('projects:details', kwargs={'pk': bug.project.pk})}?view=board")
+
 
 class BugReportDenyView(LoginRequiredMixin, View):
     def post(self, request, pk):
@@ -174,3 +198,5 @@ class BugReportDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+

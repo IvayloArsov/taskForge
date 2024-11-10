@@ -29,7 +29,7 @@
                 </thead>
                 <tbody>
                 {% for ticket in project.tickets.all %}
-                    {% if ticket.status != 'closed' %}
+                    {% if ticket.status != 'closed' and ticket.status != 'resolved' %}
                         <tr>
                             <td>
                                 <a href="{% url 'tickets:details' ticket.pk %}" class="text-decoration-none">
@@ -96,7 +96,7 @@
                 {% endfor %}
 
                 {% for bug in project.bugreports.all %}
-                    {% if not bug.is_approved and bug.status != 'closed' %}
+                    {% if not bug.is_approved and bug.status != 'closed' and bug.status != 'resolved' %}
                         <tr>
                             <td>
                                 <a href="{% url 'tickets:bug-details' bug.pk %}" class="text-decoration-none">
