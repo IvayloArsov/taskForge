@@ -2,6 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
+from taskForge.accounts.choices import UserRoleChoices
 from taskForge.projects.forms import ProjectForm
 from taskForge.projects.models import Project
 
@@ -16,10 +17,14 @@ class ProjectListView(LoginRequiredMixin, ListView):
     context_object_name = 'projects'
 
     def get_queryset(self):
-        if self.request.user.is_staff:
-            return Project.objects.all()
-        return Project.objects.filter(members=self.request.user)
+        user = self.request.user
 
+        if user.is_staff:
+            return Project.objects.all()
+        elif user.profile.role == UserRoleChoices.END_USER:
+            return Project.objects.filter(members=user)
+        else:
+            return Project.objects.filter(members=user)
 
 class StaffRequiredMixin(UserPassesTestMixin):
     def test_func(self):
@@ -75,18 +80,19 @@ class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def test_func(self):
         project = self.get_object()
-        return (self.request.user.is_staff or
-                self.request.user in project.members.all())
+        user = self.request.user
+        return user.is_staff or user in project.members.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         show_type = self.request.GET.get('show', 'tickets')
+        user = self.request.user
 
         active_statuses = ['open', 'in_progress']
         completed_statuses = ['resolved', 'closed']
 
         # shows tickets that need to be approved/denied to staff/admin roles only
-        if self.request.user.is_staff:
+        if user.is_staff:
             context['pending_bugs'] = self.object.bugreports.filter(
                 is_approved=False,
                 status__in=active_statuses
@@ -105,16 +111,22 @@ class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
         # shows pending & ongoing bug reports
         if show_type == 'bugs':
-            if self.request.user.is_staff:
-                context['pending_bugs'] = self.object.bugreports.filter(
-                    is_approved=False,
+            if user.profile.role == UserRoleChoices.END_USER:
+                context['active_bugs'] = self.object.bugreports.filter(
+                    status__in=active_statuses
+                ).order_by('-created_at')
+            else:
+                if self.request.user.is_staff:
+                    context['pending_bugs'] = self.object.bugreports.filter(
+                        is_approved=False,
+                        status__in=active_statuses
+                    ).order_by('-created_at')
+
+                context['active_bugs'] = self.object.bugreports.filter(
+                    is_approved=True,
                     status__in=active_statuses
                 ).order_by('-created_at')
 
-            context['active_bugs'] = self.object.bugreports.filter(
-                is_approved=True,
-                status__in=active_statuses
-            ).order_by('-created_at')
-
         context['show_type'] = show_type
+        context['is_end_user'] = user.profile.role == UserRoleChoices.END_USER
         return context

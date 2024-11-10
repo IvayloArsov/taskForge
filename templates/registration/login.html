@@ -15,7 +15,7 @@
           {% if form.non_field_errors %}
           <div class="alert alert-danger alert-dismissible fade show" role="alert">
             {% for error in form.non_field_errors %}
-              {{ error }}
+              {{ error }} <br>
             {% endfor %}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
           </div>
@@ -34,7 +34,7 @@
               </div>
               {% if form.username.errors %}
                 <div class="text-danger small mt-1">
-                  {% for error in form.username.errors %}{{ error }}{% endfor %}
+                  {% for error in form.username.errors %}{{ error }}<br>{% endfor %}
                 </div>
               {% endif %}
             </div>
@@ -55,7 +55,7 @@
               </div>
               {% if form.password.errors %}
                 <div class="text-danger small mt-1">
-                  {% for error in form.password.errors %}{{ error }}{% endfor %}
+                  {% for error in form.password.errors %}{{ error }}<br>{% endfor %}
                 </div>
               {% endif %}
             </div>

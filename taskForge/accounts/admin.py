@@ -36,8 +36,8 @@ class CustomUserAdmin(UserAdmin):
 
 
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'role', 'project')
-    list_filter = ('role', 'project')
+    list_display = ('user', 'role', )
+    list_filter = ('role',)
     search_fields = ('user__username', 'user__email')
     ordering = ('user__username',)
 

@@ -2,79 +2,72 @@
 {% load static %}
 {% block content %}
 
-    
-<div class="container py-4">
-   <div class="d-flex justify-content-between align-items-center mb-4">
-       <h2>Tickets</h2>
-       <a href="{% url 'tickets:create' %}" class="btn btn-primary">
-           Create Ticket
-       </a>
-   </div>
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Tickets</h2>
+            <a href="{% url 'tickets:create' %}" class="btn btn-primary">Create Ticket</a>
+        </div>
 
-   <div class="row g-4">
-       {% for ticket in tickets %}
-           <div class="col-12">
-               <div class="card shadow-sm">
-                   <div class="card-body">
-                       <div class="row align-items-center">
-                           <div class="col-md-6">
-                               <h5 class="card-title mb-1">
-                                   <a href="{% url 'tickets:details' ticket.pk %}" class="text-decoration-none">
-                                       {{ ticket.title }}
-                                   </a>
-                               </h5>
-                               <p class="text-muted small mb-0">
-                                   Project: {{ ticket.project.name }}
-                               </p>
-                           </div>
-                           <div class="col-md-4">
-                               <div class="d-flex align-items-center gap-3">
-                                   <span class="badge 
-                                       {% if ticket.status == 'open' %}bg-secondary
-                                       {% elif ticket.status == 'in_progress' %}bg-primary
-                                       {% elif ticket.status == 'resolved' %}bg-success
-                                       {% else %}bg-dark{% endif %}">
-                                       {{ ticket.get_status_display }}
-                                   </span>
-                                   <span class="badge 
-                                       {% if ticket.priority == 'low' %}bg-success
-                                       {% elif ticket.priority == 'medium' %}bg-warning
-                                       {% elif ticket.priority == 'high' %}bg-danger
-                                       {% else %}bg-danger{% endif %}">
-                                       {{ ticket.get_priority_display }}
-                                   </span>
-                                   {% if ticket.due_date %}
-                                       <small class="text-muted">
-                                           Due: {{ ticket.due_date|date:"M d, Y" }}
-                                       </small>
-                                   {% endif %}
-                               </div>
-                           </div>
-                           <div class="col-md-2">
-                               <div class="d-flex justify-content-end align-items-center">
-                                   {% if ticket.assigned_to %}
-                                       <small class="text-muted me-3">
-                                           Assigned to: {{ ticket.assigned_to.get_full_name }}
-                                       </small>
-                                   {% endif %}
-                                   <a href="{% url 'tickets:details' ticket.pk %}" class="btn btn-outline-primary btn-sm">
-                                       View
-                                   </a>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-               </div>
-           </div>
-       {% empty %}
-           <div class="col-12">
-               <div class="alert alert-info text-center">
-                   No tickets found. 
-                   <a href="{% url 'tickets:create' %}" class="alert-link">Create a new ticket</a>
-               </div>
-           </div>
-       {% endfor %}
-   </div>
-</div>
+        <div class="row g-4">
+            {% for ticket in tickets %}
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h5 class="card-title mb-1">
+                                        <a href="{% url 'tickets:details' ticket.pk %}" class="text-decoration-none">
+                                            {% if ticket.is_bug_ticket %}
+                                                <span class="badge bg-danger me-2">BUG</span>
+                                            {% endif %}
+                                            {{ ticket.title }}
+                                        </a>
+                                    </h5>
+                                    <div>Project: {{ ticket.project.name }}</div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                    <span class="badge {% if ticket.status == 'open' %}bg-secondary
+                                                      {% elif ticket.status == 'in_progress' %}bg-primary
+                                                      {% elif ticket.status == 'resolved' %}bg-success
+                                                      {% else %}bg-dark{% endif %}">
+                                        {{ ticket.get_status_display }}
+                                    </span>
+                                        <span class="badge {% if ticket.priority == 'low' %}bg-success
+                                                      {% elif ticket.priority == 'medium' %}bg-warning
+                                                      {% elif ticket.priority == 'high' %}bg-danger
+                                                      {% else %}bg-danger{% endif %}">
+                                        {{ ticket.get_priority_display }}
+                                    </span>
+                                        {% if ticket.due_date %}
+                                            <small>Due: {{ ticket.due_date|date:"M d, Y" }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <div class="d-flex justify-content-end align-items-center">
+                                        {% if ticket.assigned_to %}
+                                            <small>Assigned to: {{ ticket.assigned_to.get_full_name }}</small>
+                                        {% endif %}
+                                        <a href="{% url 'tickets:details' ticket.pk %}"
+                                           class="btn btn-outline-primary btn-sm">View</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        No tickets found. <a href="{% url 'tickets:create' %}" class="alert-link">Create a new
+                        ticket</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 
 {% endblock %}

@@ -1,6 +1,8 @@
 from .models import Ticket, BugReport
 from django import forms
 from taskForge.projects.models import Project
+from ..accounts.choices import UserRoleChoices
+from ..accounts.models import Profile
 
 
 class TicketForm(forms.ModelForm):
@@ -106,6 +108,5 @@ class BugReportForm(forms.ModelForm):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
-        if user and not user.is_staff:
-            # Only show projects where user is a member
+        if user:
             self.fields['project'].queryset = Project.objects.filter(members=user)

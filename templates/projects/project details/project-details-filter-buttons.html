@@ -1,15 +1,8 @@
-<div class="row mt-4">
-    <div class="col-12 mb-3">
-        <div class="btn-group" role="group" aria-label="Toggle view type">
-            <button type="button"
-                    class="btn btn-outline-primary {% if show_type == 'tickets' %}active{% endif %}"
-                    onclick="window.location.href='?show=tickets'">
+        <div class="btn-group mb-4" role="group">
+            <a href="?show=tickets" class="btn btn-outline-primary {% if show_type == 'tickets' %}active{% endif %}">
                 Tickets
-            </button>
-            <button type="button"
-                    class="btn btn-outline-primary {% if show_type == 'bugs' %}active{% endif %}"
-                    onclick="window.location.href='?show=bugs'">
+            </a>
+            <a href="?show=bugs" class="btn btn-outline-primary {% if show_type == 'bugs' %}active{% endif %}">
                 Bug Reports
-            </button>
+            </a>
         </div>
-    </div>

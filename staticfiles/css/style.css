@@ -7,6 +7,7 @@
     --navbar-active: #1e40af;
 }
 
+
 /* Dark Mode Variables */
 [data-bs-theme="dark"] {
     --primary-color: #3b82f6;
@@ -205,7 +206,7 @@ body {
     pointer-events: none;
     border: 1px solid transparent;
     transform-origin: 0 0;
-    transition: opacity .1s ease-in-out,transform .1s ease-in-out;
+    transition: opacity .1s ease-in-out, transform .1s ease-in-out;
 }
 
 .form-floating > .form-control:focus ~ label,
@@ -217,3 +218,4 @@ body {
 .badge.bg-warning {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
+

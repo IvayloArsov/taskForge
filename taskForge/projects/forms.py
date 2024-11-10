@@ -24,8 +24,10 @@ class ProjectForm(forms.ModelForm):
         manager_profiles = Profile.objects.filter(role=UserRoleChoices.MANAGER)
         manager_users = [profile.user for profile in manager_profiles]
 
-        developer_profiles = Profile.objects.filter(role=UserRoleChoices.DEVELOPER)
-        developer_users = [profile.user for profile in developer_profiles]
+        member_profiles = Profile.objects.filter(
+            role__in=[UserRoleChoices.DEVELOPER, UserRoleChoices.END_USER]
+        )
+        member_users = [profile.user for profile in member_profiles]
 
         self.fields['name'].widget.attrs.update({
             'class': 'form-control',
@@ -45,7 +47,10 @@ class ProjectForm(forms.ModelForm):
         })
 
         # filter out only developers to be selectable for this field
-        self.fields['members'].queryset=User.objects.filter(id__in=[user.id for user in developer_users])
+        member_queryset = User.objects.filter(id__in=[user.id for user in member_users])
+        self.fields['members'].queryset = member_queryset
+        self.fields['members'].label_from_instance = lambda \
+            user: f"{user.get_full_name()} ({user.profile.get_role_display()})"
         self.fields['members'].widget.attrs.update({
             'class': 'form-control',
             'size': '5'

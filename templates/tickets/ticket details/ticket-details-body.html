@@ -1,61 +1,73 @@
+<!-- tickets/ticket details/ticket-details-body.html -->
 <div class="col-md-8">
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="card-title mb-0">{{ ticket.title }}</h2>
+                <h2 class="card-title mb-0">
+                    {% if ticket.is_bug_ticket %}
+                        <span class="badge bg-danger me-2">BUG</span>
+                    {% endif %}
+                    {{ ticket.title }}
+                </h2>
+
                 {% if user.is_staff or user == ticket.created_by or user == ticket.assigned_to %}
-                    <a href="{% url 'tickets:edit' ticket.pk %}" class="btn btn-outline-primary btn-sm">
-                        Edit Ticket
-                    </a>
+                    <a href="{% url 'tickets:edit' ticket.pk %}" class="btn btn-outline-primary btn-sm">Edit Ticket</a>
                 {% endif %}
             </div>
 
+            {% if ticket.is_bug_ticket and ticket.original_bug_report %}
+                <div class="alert alert-info">
+                    <small>
+                        This ticket was created from a bug report
+                        by {{ ticket.original_bug_report.created_by.get_full_name }}
+                        on {{ ticket.original_bug_report.created_at|date:"M d, Y" }}
+                    </small>
+                </div>
+            {% endif %}
+
             <div class="mb-4">
                 <h5 class="text-muted">Description</h5>
-                <p>{{ ticket.description }}</p>
+                {{ ticket.description }}
             </div>
 
             <div class="row g-3">
                 <div class="col-md-6">
                     <div class="mb-3">
                         <h6 class="text-muted">Status</h6>
-                        <span class="badge 
-                                   {% if ticket.status == 'open' %}bg-secondary
-                                   {% elif ticket.status == 'in_progress' %}bg-primary
-                                   {% elif ticket.status == 'resolved' %}bg-success
-                                   {% else %}bg-dark{% endif %}">
-                                   {{ ticket.get_status_display }}
-                               </span>
+                        <span class="badge {% if ticket.status == 'open' %}bg-secondary
+                                          {% elif ticket.status == 'in_progress' %}bg-primary
+                                          {% elif ticket.status == 'resolved' %}bg-success
+                                          {% else %}bg-dark{% endif %}">
+                            {{ ticket.get_status_display }}
+                        </span>
                     </div>
+
                     <div class="mb-3">
                         <h6 class="text-muted">Priority</h6>
-                        <span class="badge 
-                                   {% if ticket.priority == 'low' %}bg-success
-                                   {% elif ticket.priority == 'medium' %}bg-warning
-                                   {% elif ticket.priority == 'high' %}bg-danger
-                                   {% else %}bg-danger{% endif %}">
-                                   {{ ticket.get_priority_display }}
-                               </span>
+                        <span class="badge {% if ticket.priority == 'low' %}bg-success
+                                          {% elif ticket.priority == 'medium' %}bg-warning
+                                          {% elif ticket.priority == 'high' %}bg-danger
+                                          {% else %}bg-danger{% endif %}">
+                            {{ ticket.get_priority_display }}
+                        </span>
                     </div>
                 </div>
+
                 <div class="col-md-6">
                     <div class="mb-3">
                         <h6 class="text-muted">Due Date</h6>
-                        <p class="mb-0">
-                            {% if ticket.due_date %}
-                                {{ ticket.due_date|date:"M d, Y" }}
-                            {% else %}
-                                <span class="text-muted">No due date set</span>
-                            {% endif %}
-                        </p>
+                        {% if ticket.due_date %}
+                            {{ ticket.due_date|date:"M d, Y" }}
+                        {% else %}
+                            <span class="text-muted">No due date set</span>
+                        {% endif %}
                     </div>
+
                     <div class="mb-3">
                         <h6 class="text-muted">Project</h6>
-                        <p class="mb-0">
-                            <a href="{% url 'projects:details' ticket.project.pk %}" class="text-decoration-none">
-                                {{ ticket.project.name }}
-                            </a>
-                        </p>
+                        <a href="{% url 'projects:details' ticket.project.pk %}" class="text-decoration-none">
+                            {{ ticket.project.name }}
+                        </a>
                     </div>
                 </div>
             </div>

@@ -55,7 +55,7 @@
                             <label for="floatingPassword">Password</label>
                             {% if form.password1.errors %}
                                 <div class="text-danger small">
-                                    {% for error in form.password1.errors %}{{ error }}{% endfor %}
+                                    {% for error in form.password1.errors %}{{ error }}<br>{% endfor %}
                                 </div>
                             {% endif %}
                         </div>
@@ -65,7 +65,7 @@
                             <label for="floatingPasswordConfirm">Confirm Password</label>
                             {% if form.password2.errors %}
                                 <div class="text-danger small">
-                                    {% for error in form.password2.errors %}{{ error }}{% endfor %}
+                                    {% for error in form.password2.errors %}{{ error }}<br>{% endfor %}
                                 </div>
                             {% endif %}
                         </div>

@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
+from django.template.base import kwarg_re
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 
@@ -99,6 +100,14 @@ class BugReportCreateView(LoginRequiredMixin, CreateView):
     form_class = BugReportForm
     template_name = 'tickets/bug-report-creation.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context['user_projects'] = Project.objects.filter(members=user)
+        context['user_role'] = user.profile.role
+        return context
+
+
     def form_valid(self, form):
         form.instance.created_by = self.request.user
         return super().form_valid(form)
@@ -113,6 +122,20 @@ class BugReportApproveView(LoginRequiredMixin, View):
             raise PermissionDenied
 
         bug = get_object_or_404(BugReport, pk=pk)
+        ticket = Ticket.objects.create(
+            title=f'[BUG] {bug.title}',
+            description=f"""
+            {bug.description} \n
+            Reported by: {bug.created_by.get_full_name()} \n
+            Reported on: {bug.created_at}""",
+            priority=bug.priority,
+            status='open',
+            project=bug.project,
+            created_by=request.user,
+            assigned_to=None,
+            is_bug_ticket=True,
+            original_bug_report=bug
+        )
         bug.is_approved = True
         bug.save()
 
@@ -136,6 +159,13 @@ class BugReportDetailView(LoginRequiredMixin, DetailView):
     model = BugReport
     template_name = 'tickets/bug-report-details.html'
     context_object_name = 'bug'
+
+    def test_func(self):
+        bug = self.get_object()
+        user = self.request.user
+        return (user.is_staff or
+                user in bug.project.members.all() or
+                user == bug.created_by)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
