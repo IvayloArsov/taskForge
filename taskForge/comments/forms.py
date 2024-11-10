@@ -12,5 +12,10 @@ class CommentForm(forms.ModelForm):
                     'rows':3,
                     'placeholder': 'Add a comment...'
                 }
-            )
+            ),
+
+        }
+        #wtf.
+        labels = {
+            'content': '',
         }

@@ -1,3 +1,5 @@
+from email.policy import default
+
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -60,7 +62,15 @@ class BaseTicket(models.Model):
         return self.title
 
 class Ticket(BaseTicket):
-    pass
+    is_bug_ticket = models.BooleanField(default=False)
+    original_bug_report = models.OneToOneField(
+        'BugReport',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='converted_ticket'
+    )
+
 
 class BugReport(BaseTicket):
     is_approved = models.BooleanField(default=False)

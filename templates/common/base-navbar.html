@@ -51,7 +51,10 @@
                 {% endif %}
             </ul>
 
-            <ul class="navbar-nav ms-auto gap-2">
+            
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><ul class="navbar-nav ms-auto gap-2">
                 <li class="nav-item d-flex align-items-center">
                     <button class="btn nav-link" id="theme-toggle">
                         <i class="bi bi-sun-fill theme-icon-light"></i>
@@ -59,30 +62,32 @@
                     </button>
                 </li>
                 {% if user.is_authenticated %}
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        {{ user.first_name }}
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item"
-                               href="{% url 'accounts:profile-details' user.pk %}">Profile</a>
-                        </li>
-                        {% if user.is_staff %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            {{ user.first_name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-under">
                             <li>
-                                <a class="dropdown-item" href="{% url 'admin:index' %}">Admin Panel</a>
+                                <a class="dropdown-item"
+                                   href="{% url 'accounts:profile-details' user.pk %}">Profile</a>
                             </li>
-                        {% endif %}
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li>
-                            <a class="dropdown-item text-danger" href="#"
-                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                Logout
-                            </a>
-                        </li>
-                    </ul>
-                {% else %}
+                            {% if user.is_staff %}
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'admin:index' %}">Admin Panel</a>
+                                </li>
+                            {% endif %}
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="#"
+                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    Logout
+                                </a>
+                            </li>
+                        </ul>
+                        {% else %}
                     <li class="nav-item">
                         <a href="{% url 'accounts:login' %}" class="nav-link">
                             <i class="bi bi-box-arrow-in-right me-1"></i>Login
@@ -98,3 +103,4 @@
         </div>
     </div>
 </nav>
+
