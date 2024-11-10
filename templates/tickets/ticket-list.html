@@ -5,7 +5,9 @@
     <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Tickets</h2>
-            <a href="{% url 'tickets:create' %}" class="btn btn-primary">Create Ticket</a>
+            {% if not user.profile.role == 'end_user' %}
+                <a href="{% url 'tickets:create' %}" class="btn btn-primary">Create Ticket</a>
+            {% endif %}        
         </div>
 
         <div class="row g-4">

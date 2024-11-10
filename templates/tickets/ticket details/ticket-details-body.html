@@ -3,15 +3,12 @@
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="card-title mb-0">
-                    {% if ticket.is_bug_ticket %}
-                        <span class="badge bg-danger me-2">BUG</span>
+                <h2 class="card-title mb-0">{{ ticket.title }}</h2>
+                {% if not user.profile.role == 'end_user' %}
+                    {% if user.is_staff or user == ticket.created_by or user == ticket.assigned_to %}
+                        <a href="{% url 'tickets:edit' ticket.pk %}" class="btn btn-outline-primary btn-sm">Edit
+                            Ticket</a>
                     {% endif %}
-                    {{ ticket.title }}
-                </h2>
-
-                {% if user.is_staff or user == ticket.created_by or user == ticket.assigned_to %}
-                    <a href="{% url 'tickets:edit' ticket.pk %}" class="btn btn-outline-primary btn-sm">Edit Ticket</a>
                 {% endif %}
             </div>
 

@@ -1,0 +1,162 @@
+<div class="card shadow-sm">
+    <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Project Board</h5>
+        <div class="btn-group">
+            {% if not user.profile.role == 'end_user' %}
+                <a href="{% url 'tickets:create' %}?project={{ project.pk }}" class="btn btn-primary btn-sm me-2">
+                    <i class="bi bi-plus-lg me-1"></i>Create Ticket
+                </a>
+            {% endif %}
+            <a href="{% url 'tickets:report-bug' %}?project={{ project.pk }}" class="btn btn-outline-warning btn-sm">
+                <i class="bi bi-bug me-1"></i>Report Bug
+            </a>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Assigned To</th>
+                    <th>Due Date</th>
+                    <th>Created</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for ticket in project.tickets.all %}
+                    {% if ticket.status != 'closed' %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'tickets:details' ticket.pk %}" class="text-decoration-none">
+                                    {% if ticket.is_bug_ticket %}
+                                        <span class="badge bg-danger me-1">BUG</span>
+                                    {% endif %}
+                                    {{ ticket.title }}
+                                </a>
+                            </td>
+                            <td>
+                                {% if ticket.is_bug_ticket %}
+                                    <span class="text-danger">Bug Report</span>
+                                {% else %}
+                                    <span class="text-primary">Ticket</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                    <span class="badge {% if ticket.status == 'open' %}bg-secondary
+                                                      {% elif ticket.status == 'in_progress' %}bg-primary
+                                                      {% elif ticket.status == 'resolved' %}bg-success
+                                                      {% else %}bg-dark{% endif %}">
+                                        {{ ticket.get_status_display }}
+                                    </span>
+                            </td>
+                            <td>
+                                    <span class="badge {% if ticket.priority == 'low' %}bg-success
+                                                      {% elif ticket.priority == 'medium' %}bg-warning
+                                                      {% elif ticket.priority == 'high' %}bg-danger
+                                                      {% else %}bg-danger{% endif %}">
+                                        {{ ticket.get_priority_display }}
+                                    </span>
+                            </td>
+                            <td>
+                                {% if ticket.assigned_to %}
+                                    {{ ticket.assigned_to.get_full_name }}
+                                {% else %}
+                                    <span class="text-muted">Unassigned</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if ticket.due_date %}
+                                    <small class="{% if ticket.due_date|date:'Y-m-d' < now|date:'Y-m-d' %}text-danger{% else %}text-muted{% endif %}">
+                                        {{ ticket.due_date|date:"M d, Y" }}
+                                    </small>
+                                {% else %}
+                                    <small class="text-muted">No deadline</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ ticket.created_at|date:"M d, Y" }}</small>
+                            </td>
+
+
+                            <td class="text-end">
+                                {% if user.is_staff or user == ticket.created_by or user == ticket.assigned_to %}
+                                    <a href="{% url 'tickets:edit' ticket.pk %}" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+
+                {% for bug in project.bugreports.all %}
+                    {% if not bug.is_approved and bug.status != 'closed' %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'tickets:bug-details' bug.pk %}" class="text-decoration-none">
+                                    <span class="badge bg-warning me-1">PENDING</span>
+                                    {{ bug.title }}
+                                </a>
+                            </td>
+                            <td>
+                                <span class="text-warning">Bug Report</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-warning">Pending Review</span>
+                            </td>
+                            <td>
+                                    <span class="badge {% if bug.priority == 'low' %}bg-success
+                                                      {% elif bug.priority == 'medium' %}bg-warning
+                                                      {% elif bug.priority == 'high' %}bg-danger
+                                                      {% else %}bg-danger{% endif %}">
+                                        {{ bug.get_priority_display }}
+                                    </span>
+                            </td>
+                            <td>
+                                <span class="text-muted">Pending</span>
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ bug.created_at|date:"M d, Y" }}</small>
+                            </td>
+                            <td class="text-end">
+                                {% if user.is_staff %}
+                                    <div class="btn-group">
+                                        <form method="post" action="{% url 'tickets:approve-bug' bug.pk %}"
+                                              class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success btn-sm me-1">
+                                                <i class="bi bi-check"></i>
+                                            </button>
+                                        </form>
+                                        <form method="post" action="{% url 'tickets:deny-bug' bug.pk %}"
+                                              class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+
+                {% if not project.tickets.exists and not project.bugreports.exists %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            No active tickets or bug reports
+                        </td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

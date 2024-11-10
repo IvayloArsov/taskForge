@@ -8,6 +8,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .forms import TicketForm, BugReportForm
 from .models import Ticket, BugReport
 from taskForge.projects.models import Project
+from ..accounts.choices import UserRoleChoices
 from ..comments.forms import CommentForm
 
 
@@ -43,6 +44,9 @@ class TicketCreateView(LoginRequiredMixin, CreateView):
     form_class = TicketForm
     template_name = 'tickets/ticket-create.html'
 
+    def test_func(self):
+        return not self.request.user.profile.role == UserRoleChoices.END_USER
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
@@ -56,7 +60,7 @@ class TicketCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('tickets:details', kwargs={'pk': self.object.pk})
+        return f"{reverse_lazy('projects:details', kwargs={'pk': self.object.project.pk})}?view=board"
 
 
 class TicketUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -64,25 +68,29 @@ class TicketUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = TicketForm
     template_name = 'tickets/ticket-edit.html'
 
+    def test_func(self):
+        user = self.request.user
+
+        if user.profile.role == UserRoleChoices.END_USER:
+            return False
+        ticket = self.get_object()
+        return (user.is_staff or
+                user == ticket.created_by or
+                user == ticket.assigned_to)
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
-    def test_func(self):
-        ticket = self.get_object()
-        return (self.request.user.is_staff or
-                self.request.user == ticket.created_by or
-                self.request.user == ticket.assigned_to)
-
     def get_success_url(self):
-        return reverse_lazy('tickets:details', kwargs={'pk': self.object.pk})
+        return f"{reverse_lazy('projects:details', kwargs={'pk': self.object.project.pk})}?view=board"
 
 
 class TicketDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Ticket
     template_name = 'tickets/ticket-delete.html'
-    success_url = reverse_lazy('tickets:list')
+
 
     def test_func(self):
         """
@@ -94,6 +102,8 @@ class TicketDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
                 self.request.user == ticket.created_by
         )
 
+    def get_success_url(self):
+        return f"{reverse_lazy('projects:details', kwargs={'pk': self.object.project.pk})}?view=board"
 
 class BugReportCreateView(LoginRequiredMixin, CreateView):
     model = BugReport
@@ -107,14 +117,12 @@ class BugReportCreateView(LoginRequiredMixin, CreateView):
         context['user_role'] = user.profile.role
         return context
 
-
     def form_valid(self, form):
         form.instance.created_by = self.request.user
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('projects:details', kwargs={'pk': self.object.project.pk})
-
+        return f"{reverse_lazy('projects:details', kwargs={'pk': self.object.project.pk})}?view=board"
 
 class BugReportApproveView(LoginRequiredMixin, View):
     def post(self, request, pk):
@@ -124,10 +132,7 @@ class BugReportApproveView(LoginRequiredMixin, View):
         bug = get_object_or_404(BugReport, pk=pk)
         ticket = Ticket.objects.create(
             title=f'[BUG] {bug.title}',
-            description=f"""
-            {bug.description} \n
-            Reported by: {bug.created_by.get_full_name()} \n
-            Reported on: {bug.created_at}""",
+            description=f'{bug.description}',
             priority=bug.priority,
             status='open',
             project=bug.project,
@@ -139,8 +144,7 @@ class BugReportApproveView(LoginRequiredMixin, View):
         bug.is_approved = True
         bug.save()
 
-        return redirect('projects:details', pk=bug.project.pk)
-
+        return redirect(f"{reverse_lazy('projects:details', kwargs={'pk': bug.project.pk})}?view=board")
 
 class BugReportDenyView(LoginRequiredMixin, View):
     def post(self, request, pk):

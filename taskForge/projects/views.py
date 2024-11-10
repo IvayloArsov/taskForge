@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+from django.utils import timezone
 
 from taskForge.accounts.choices import UserRoleChoices
 from taskForge.projects.forms import ProjectForm
@@ -25,6 +26,7 @@ class ProjectListView(LoginRequiredMixin, ListView):
             return Project.objects.filter(members=user)
         else:
             return Project.objects.filter(members=user)
+
 
 class StaffRequiredMixin(UserPassesTestMixin):
     def test_func(self):
@@ -85,48 +87,21 @@ class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        show_type = self.request.GET.get('show', 'tickets')
-        user = self.request.user
+        view_type = self.request.GET.get('view', 'summary')
+        context['view_type'] = view_type
+        context['now'] = timezone.now().date()
 
-        active_statuses = ['open', 'in_progress']
-        completed_statuses = ['resolved', 'closed']
+        if view_type == 'board':
+            context['tickets'] = self.object.tickets.exclude(status='closed').order_by('-created_at')
+            if self.request.user.is_staff:
+                context['pending_bugs'] = self.object.bugreports.filter(
+                    is_approved=False
+                ).order_by('-created_at')
 
-        # shows tickets that need to be approved/denied to staff/admin roles only
-        if user.is_staff:
-            context['pending_bugs'] = self.object.bugreports.filter(
-                is_approved=False,
-                status__in=active_statuses
-            ).order_by('-created_at')
-
-
-        # shows active & completed tickets
-        if show_type == 'tickets':
-            context['active_tickets'] = self.object.tickets.filter(
-                status__in=active_statuses
-            ).order_by('-created_at')
-
-            context['completed_tickets'] = self.object.tickets.filter(
-                status__in=completed_statuses
+        elif view_type == 'archived':
+            context['archived_tickets'] = self.object.tickets.filter(
+                status='closed'
             ).order_by('-updated_at')
 
-        # shows pending & ongoing bug reports
-        if show_type == 'bugs':
-            if user.profile.role == UserRoleChoices.END_USER:
-                context['active_bugs'] = self.object.bugreports.filter(
-                    status__in=active_statuses
-                ).order_by('-created_at')
-            else:
-                if self.request.user.is_staff:
-                    context['pending_bugs'] = self.object.bugreports.filter(
-                        is_approved=False,
-                        status__in=active_statuses
-                    ).order_by('-created_at')
-
-                context['active_bugs'] = self.object.bugreports.filter(
-                    is_approved=True,
-                    status__in=active_statuses
-                ).order_by('-created_at')
-
-        context['show_type'] = show_type
-        context['is_end_user'] = user.profile.role == UserRoleChoices.END_USER
+        context['is_end_user'] = self.request.user.profile.role == UserRoleChoices.END_USER
         return context

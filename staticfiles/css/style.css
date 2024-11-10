@@ -219,3 +219,15 @@ body {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
+
+[data-bs-toggle="collapse"] .bi-arrow-down {
+    transition: transform 0.2s ease;
+}
+
+[data-bs-toggle="collapse"][aria-expanded="true"] .bi-arrow-down {
+    transform: rotate(180deg);
+}
+
+.transition-transform {
+    transition: transform 0.2s ease;
+}

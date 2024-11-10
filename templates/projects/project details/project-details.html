@@ -1,10 +1,10 @@
-<!-- templates/projects/project-details.html -->
+<!-- projects/project-details.html -->
 {% extends 'common/base.html' %}
 {% block content %}
 
 <div class="container py-4">
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-12">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -14,44 +14,82 @@
                         {% endif %}
                     </div>
 
-                    <div class="mb-4">
-                        <h5 class="text-muted">Description</h5>
-                        {{ project.description }}
-                    </div>
+                    <p class="text-muted mb-3">{{ project.description }}</p>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5 class="text-muted">Project Lead</h5>
-                            {{ project.lead_by.get_full_name }}
-                        </div>
+                    <a class="btn btn-link btn-sm text-decoration-none p-0 mb-3 d-inline-flex align-items-center"
+                       data-bs-toggle="collapse"
+                       href="#projectInfo"
+                       role="button"
+                       aria-expanded="false">
+                        More Info<i class="bi bi-arrow-down ms-1 transition-transform"></i>
+                    </a>
 
-                        <div class="col-md-6">
-                            <h5 class="text-muted">Created By</h5>
-                            {{ project.created_by.get_full_name }} on {{ project.created_at|date:"M d, Y" }}
+                    <div class="collapse" id="projectInfo">
+                        <div class="card card-body border-0">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Project Details</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="mb-2">
+                                            <span class="text-muted">Created by:</span>
+                                            {{ project.created_by.get_full_name }}
+                                        </li>
+                                        <li class="mb-2">
+                                            <span class="text-muted">Created on:</span>
+                                            {{ project.created_at|date:"M d, Y" }}
+                                        </li>
+                                        <li class="mb-2">
+                                            <span class="text-muted">Project Lead:</span>
+                                            {{ project.lead_by.get_full_name }}
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Team Members</h6>
+                                    <ul class="list-unstyled mb-0">
+                                        {% for member in project.members.all %}
+                                            <li class="mb-2">
+                                                {{ member.get_full_name }}
+                                                {% if member == project.lead_by %}
+                                                    <span class="badge bg-primary">Lead</span>
+                                                {% endif %}
+                                                <span class="badge bg-secondary">{{ member.profile.get_role_display }}</span>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        {% include 'projects/project details/project-details-sidebar.html' %}
-        
-        {% include 'projects/project details/project-details-filter-buttons.html' %}
+        <div class="col-12 mb-4">
+            <div class="btn-group" role="group">
+                <a href="?view=summary" class="btn btn-outline-primary {% if view_type == 'summary' %}active{% endif %}">
+                    <i class="bi bi-graph-up me-2"></i>Summary
+                </a>
+                <a href="?view=board" class="btn btn-outline-primary {% if view_type == 'board' %}active{% endif %}">
+                    <i class="bi bi-kanban me-2"></i>Board
+                </a>
+                <a href="?view=archived" class="btn btn-outline-primary {% if view_type == 'archived' %}active{% endif %}">
+                    <i class="bi bi-archive me-2"></i>Archived Issues
+                </a>
+            </div>
+        </div>
 
-        <div class="row mt-4">
-            {% if show_type == 'tickets' or show_type == 'all' %}
-                {% include 'projects/project details/project-details-column-active.html' %}
-            {% endif %}
-            
-            {% if show_type == 'bugs' or show_type == 'all' %}
-                {% include 'projects/project details/active_bugs.html' %}
-            {% endif %}
-            
-            {% if show_type == 'tickets' or show_type == 'all' %}
-                {% include 'projects/project details/project-details-column-completed.html' %}
+        <div class="col-12">
+            {% if view_type == 'summary' %}
+                {% include 'projects/project details/project-summary.html' %}
+            {% elif view_type == 'board' %}
+                {% include 'projects/project details/project-board.html' %}
+            {% elif view_type == 'archived' %}
+                {% include 'projects/project details/project-archived.html' %}
             {% endif %}
         </div>
     </div>
 </div>
 
 {% endblock %}
+

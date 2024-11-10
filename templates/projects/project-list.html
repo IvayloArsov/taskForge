@@ -1,53 +1,54 @@
 {% extends 'common/base.html' %}
 {% block content %}
-{% load static %}
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Projects</h2>
-        {% if user.is_staff %}
-            <a href="{% url 'projects:create' %}" class="btn btn-primary">
-                Create Project
-            </a>
-        {% endif %}
-    </div>
+    {% load static %}
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Projects</h2>
+            {% if user.is_staff %}
+                <a href="{% url 'projects:create' %}" class="btn btn-primary">
+                    Create Project
+                </a>
+            {% endif %}
+        </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-1 g-4">
-        {% for project in projects %}
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h4 class="card-title">{{ project.name }}</h4>
-                        <p class="card-text fst-italic text-muted small mb-3">
-                            Led by {{ project.lead_by.get_full_name }}
-                        </p>
-                        <p class="card-text">
-                            {{ project.description|truncatewords:30 }}
-                        </p>
-                    </div>
-                    <div class="card-footer bg-transparent border-top">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                                {{ project.members.count }} team members
-                            </small>
-                            <a href="{% url 'projects:details' project.pk %}" class="btn btn-outline-primary btn-sm">
-                                View Details
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-1 g-4">
+            {% for project in projects %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <a href="{% url 'projects:details' project.pk %}">
+                                <h3 class="card-title">{{ project.name }}</h3>
                             </a>
+
+                            <p class="card-text fst-italic text-muted small mb-3">
+                                Led by {{ project.lead_by.get_full_name }}
+                            </p>
+                            <p class="card-text">
+                                {{ project.description|truncatewords:30 }}
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    {{ project.members.count }} team members
+                                </small>
+
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        {% empty %}
-            <div class="col-12">
-                <div class="alert alert-info text-center">
-                    {% if user.is_staff %}
-                        No projects yet. Click "Create Project" to get started!
-                    {% else %}
-                        No projects available at the moment.
-                    {% endif %}
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        {% if user.is_staff %}
+                            No projects yet. Click "Create Project" to get started!
+                        {% else %}
+                            No projects available at the moment.
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
-</div>
 
 {% endblock %}
