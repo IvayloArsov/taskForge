@@ -91,17 +91,28 @@ class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['view_type'] = view_type
         context['now'] = timezone.now().date()
 
+        sort_by = self.request.GET.get('sort', '-created_at')
+        sort_direction = self.request.GET.get('direction', 'asc')
+
+        context['current_sort'] = sort_by
+        context['current_direction'] = sort_direction
+
+        sort_field = f'-{sort_by}' if sort_direction == 'desc' else sort_by
+
         if view_type == 'board':
-            context['tickets'] = self.object.tickets.exclude(status='closed').order_by('-created_at')
+            context['tickets'] = self.object.tickets.exclude(
+                status__in=['closed', 'resolved']
+            ).order_by(sort_field)
+
             if self.request.user.is_staff:
                 context['pending_bugs'] = self.object.bugreports.filter(
                     is_approved=False
-                ).order_by('-created_at')
+                ).order_by(sort_field)
 
         elif view_type == 'archived':
             context['archived_tickets'] = self.object.tickets.filter(
-                status='closed'
-            ).order_by('-updated_at')
+                status__in=['closed', 'resolved']
+            ).order_by(sort_field)
 
         context['is_end_user'] = self.request.user.profile.role == UserRoleChoices.END_USER
         return context

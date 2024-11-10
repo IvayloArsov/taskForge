@@ -29,7 +29,7 @@ def update_user_permissions(sender, instance, **kwargs):
         return
 
     try:
-        instance._updating_permissions = True  # And here
+        instance._updating_permissions = True
         user = instance.user
 
         user.groups.clear()

@@ -13,8 +13,8 @@
                     <th>Status</th>
                     <th>Priority</th>
                     <th>Assigned To</th>
-                    <th>Due Date</th>
                     <th>Created</th>
+                    <th>Archived</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -24,7 +24,9 @@
                             <td>
                                 <a href="{% url 'tickets:details' ticket.pk %}" class="text-decoration-none">
                                     {% if ticket.is_bug_ticket %}
-                                        <span class="badge bg-danger me-1">BUG</span>
+                                        <i class="bi bi-bug"></i>
+                                    {% else %}
+                                        <i class="bi bi-text-paragraph"></i>
                                     {% endif %}
                                     {{ ticket.title }}
                                 </a>
@@ -60,16 +62,13 @@
                             </td>
 
                             <td>
-                                {% if ticket.due_date %}
-                                    <small class="{% if ticket.due_date|date:'Y-m-d' < now|date:'Y-m-d' %}text-danger{% else %}text-muted{% endif %}">
-                                        {{ ticket.due_date|date:"M d, Y" }}
-                                    </small>
-                                {% else %}
-                                    <small class="text-muted">No deadline</small>
-                                {% endif %}
+                                <small>
+                                    {{ ticket.created_at|date:"M d, Y H:i" }}
+                                </small>
+
                             </td>
                             <td>
-                                <small class="text-muted">{{ ticket.created_at|date:"M d, Y" }}</small>
+                                <small class="text-muted">{{ ticket.updated_at|date:"M d, Y H:i" }}</small>
                             </td>
                         </tr>
                     {% endif %}

@@ -10,7 +10,6 @@ from taskForge.accounts.forms import CustomUserCreationForm, UserLoginForm, Prof
 from taskForge.accounts.models import Profile
 
 
-# Create your views here.
 class CustomUserRegisterView(CreateView):
     form_class = CustomUserCreationForm
     template_name = 'registration/register.html'

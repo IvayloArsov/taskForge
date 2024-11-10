@@ -18,82 +18,88 @@
             <table class="table table-hover align-middle">
                 <thead>
                 <tr>
-                    <th>Title</th>
+                    <th>
+                        <a href="?view=board&sort=title&direction={% if current_sort == 'title' and current_direction == 'asc' %}desc{% else %}asc{% endif %}"
+                           class="">
+                            Title
+                            {% if current_sort == 'title' %}
+                                {% if current_direction == 'asc' %}
+                                    <i class="bi bi-arrow-up-short"></i>
+                                {% else %}
+                                    <i class="bi bi-arrow-down-short"></i>
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
                     <th>Type</th>
-                    <th>Status</th>
-                    <th>Priority</th>
-                    <th>Assigned To</th>
-                    <th>Due Date</th>
-                    <th>Created</th>
+                    <th>
+                        <a href="?view=board&sort=status&direction={% if current_sort == 'status' and current_direction == 'asc' %}desc{% else %}asc{% endif %}"
+                           class="">
+                            Status
+                            {% if current_sort == 'status' %}
+                                {% if current_direction == 'asc' %}
+                                    <i class="bi bi-arrow-up-short"></i>
+                                {% else %}
+                                    <i class="bi bi-arrow-down-short"></i>
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?view=board&sort=priority&direction={% if current_sort == 'priority' and current_direction == 'asc' %}desc{% else %}asc{% endif %}"
+                           class="">
+                            Priority
+                            {% if current_sort == 'priority' %}
+                                {% if current_direction == 'asc' %}
+                                    <i class="bi bi-arrow-up-short"></i>
+                                {% else %}
+                                    <i class="bi bi-arrow-down-short"></i>
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?view=board&sort=assigned_to&direction={% if current_sort == 'assigned_to' and current_direction == 'asc' %}desc{% else %}asc{% endif %}"
+                           class="">
+                            Assigned To
+                            {% if current_sort == 'assigned_to' %}
+                                {% if current_direction == 'asc' %}
+                                    <i class="bi bi-arrow-up-short"></i>
+                                {% else %}
+                                    <i class="bi bi-arrow-down-short"></i>
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?view=board&sort=due_date&direction={% if current_sort == 'due_date' and current_direction == 'asc' %}desc{% else %}asc{% endif %}"
+                           class="">
+                            Due Date
+                            {% if current_sort == 'due_date' %}
+                                {% if current_direction == 'asc' %}
+                                    <i class="bi bi-arrow-up-short"></i>
+                                {% else %}
+                                    <i class="bi bi-arrow-down-short"></i>
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?view=board&sort=created_at&direction={% if current_sort == 'created_at' and current_direction == 'asc' %}desc{% else %}asc{% endif %}"
+                           class="">
+                            Created
+                            {% if current_sort == 'created_at' %}
+                                {% if current_direction == 'asc' %}
+                                    <i class="bi bi-arrow-up-short"></i>
+                                {% else %}
+                                    <i class="bi bi-arrow-down-short"></i>
+                                {% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for ticket in project.tickets.all %}
-                    {% if ticket.status != 'closed' and ticket.status != 'resolved' %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'tickets:details' ticket.pk %}" class="text-decoration-none">
-                                    {% if ticket.is_bug_ticket %}
-                                        <span class="badge bg-danger me-1">BUG</span>
-                                    {% endif %}
-                                    {{ ticket.title }}
-                                </a>
-                            </td>
-                            <td>
-                                {% if ticket.is_bug_ticket %}
-                                    <span class="text-danger">Bug Report</span>
-                                {% else %}
-                                    <span class="text-primary">Ticket</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                    <span class="badge {% if ticket.status == 'open' %}bg-secondary
-                                                      {% elif ticket.status == 'in_progress' %}bg-primary
-                                                      {% elif ticket.status == 'resolved' %}bg-success
-                                                      {% else %}bg-dark{% endif %}">
-                                        {{ ticket.get_status_display }}
-                                    </span>
-                            </td>
-                            <td>
-                                    <span class="badge {% if ticket.priority == 'low' %}bg-success
-                                                      {% elif ticket.priority == 'medium' %}bg-warning
-                                                      {% elif ticket.priority == 'high' %}bg-danger
-                                                      {% else %}bg-danger{% endif %}">
-                                        {{ ticket.get_priority_display }}
-                                    </span>
-                            </td>
-                            <td>
-                                {% if ticket.assigned_to %}
-                                    {{ ticket.assigned_to.get_full_name }}
-                                {% else %}
-                                    <span class="text-muted">Unassigned</span>
-                                {% endif %}
-                            </td>
-
-                            <td>
-                                {% if ticket.due_date %}
-                                    <small class="{% if ticket.due_date|date:'Y-m-d' < now|date:'Y-m-d' %}text-danger{% else %}text-muted{% endif %}">
-                                        {{ ticket.due_date|date:"M d, Y" }}
-                                    </small>
-                                {% else %}
-                                    <small class="text-muted">No deadline</small>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <small class="text-muted">{{ ticket.created_at|date:"M d, Y" }}</small>
-                            </td>
-
-
-                            <td class="text-end">
-                                {% if user.is_staff or user == ticket.created_by or user == ticket.assigned_to %}
-                                    <a href="{% url 'tickets:edit' ticket.pk %}" class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endif %}
-                {% endfor %}
 
                 {% for bug in project.bugreports.all %}
                     {% if not bug.is_approved and bug.status != 'closed' and bug.status != 'resolved' %}
@@ -147,8 +153,77 @@
                         </tr>
                     {% endif %}
                 {% endfor %}
+                {% for ticket in tickets %}
+                    {% if ticket.status != 'closed' and ticket.status != 'resolved' %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'tickets:details' ticket.pk %}" class="text-decoration-none">
+                                    {% if ticket.is_bug_ticket %}
+                                        <i class="bi bi-bug"></i>
+                                    {% else %}
+                                        <i class="bi bi-text-paragraph"></i>
+                                    {% endif %}
+                                    {{ ticket.title }}
+                                </a>
+                            </td>
+                            <td>
+                                {% if ticket.is_bug_ticket %}
+                                    <span class="text-danger">Bug Report</span>
+                                {% else %}
+                                    <span class="text-primary">Ticket</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                    <span class="badge {% if ticket.status == 'open' %}bg-secondary
+                                                      {% elif ticket.status == 'in_progress' %}bg-primary
+                                                      {% elif ticket.status == 'resolved' %}bg-success
+                                                      {% else %}bg-dark{% endif %}">
+                                        {{ ticket.get_status_display }}
+                                    </span>
+                            </td>
+                            <td>
+                                    <span class="badge {% if ticket.priority == 'low' %}bg-success
+                                                      {% elif ticket.priority == 'medium' %}bg-warning
+                                                      {% elif ticket.priority == 'high' %}bg-danger
+                                                      {% else %}bg-danger{% endif %}">
+                                        {{ ticket.get_priority_display }}
+                                    </span>
+                            </td>
+                            <td>
+                                {% if ticket.assigned_to %}
+                                    {{ ticket.assigned_to.get_full_name }}
+                                {% else %}
+                                    <span class="text-muted">Unassigned</span>
+                                {% endif %}
+                            </td>
 
-                {% if not project.tickets.exists and not project.bugreports.exists %}
+                            <td>
+                                {% if ticket.due_date %}
+                                    <small class="{% if ticket.due_date|date:'Y-m-d' < now|date:'Y-m-d' %}text-danger{% else %}text-muted{% endif %}">
+                                        {{ ticket.due_date|date:"M d, Y" }}
+                                    </small>
+                                {% else %}
+                                    <small class="text-muted">No deadline</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ ticket.created_at|date:"M d, Y H:i" }}</small>
+                            </td>
+
+
+                            <td class="text-end">
+                                {% if user.is_staff or user == ticket.created_by or user == ticket.assigned_to %}
+                                    <a href="{% url 'tickets:edit' ticket.pk %}" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+
+
+                {% if not tickets.exists and not pending_bugs %}
                     <tr>
                         <td colspan="7" class="text-center text-muted py-4">
                             No active tickets or bug reports
