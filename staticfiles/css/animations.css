@@ -1,0 +1,11 @@
+[data-bs-toggle="collapse"] .bi-arrow-down {
+    transition: transform 0.2s ease;
+}
+
+[data-bs-toggle="collapse"][aria-expanded="true"] .bi-arrow-down {
+    transform: rotate(180deg);
+}
+
+.transition-transform {
+    transition: transform 0.2s ease;
+}
