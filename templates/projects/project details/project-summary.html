@@ -1,0 +1,53 @@
+<div class="row g-4">
+    <div class="col-12 col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body p-4">  
+                <h5 class="card-title mb-4">Priority Breakdown</h5>
+                {% if priority_chart %}
+                    {{ priority_chart|safe }}
+                {% else %}
+                    <p class="text-muted text-center">No tickets available for analysis</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-4">Status Overview</h5>
+                {% if status_chart %}
+                    {{ status_chart|safe }}
+                {% else %}
+                    <p class="text-muted text-center">No status data available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-4">Work Type Distribution</h5>
+                {% if work_types_chart %}
+                    {{ work_types_chart|safe }}
+                {% else %}
+                    <p class="text-muted text-center">No work type data available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-4">Team Workload Distribution</h5>
+                {% if team_workload_chart %}
+                    {{ team_workload_chart|safe }}
+                {% else %}
+                    <p class="text-muted text-center">No team workload data available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

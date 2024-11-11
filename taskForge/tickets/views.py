@@ -41,6 +41,7 @@ class TicketDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         return context
 
 
+
 class TicketCreateView(LoginRequiredMixin, CreateView):
     model = Ticket
     form_class = TicketForm

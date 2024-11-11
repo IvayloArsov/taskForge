@@ -4,6 +4,12 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 
 from taskForge.accounts.choices import UserRoleChoices
+from taskForge.projects.analytics.charts import (
+    generate_priority_chart,
+    generate_status_chart,
+    generate_work_types_chart,
+    generate_team_workload_chart
+)
 from taskForge.projects.forms import ProjectForm
 from taskForge.projects.models import Project
 
@@ -113,6 +119,14 @@ class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             context['archived_tickets'] = self.object.tickets.filter(
                 status__in=['closed', 'resolved']
             ).order_by(sort_field)
+
+        elif view_type == 'summary':
+            context.update({
+                'priority_chart': generate_priority_chart(self.object),
+                'status_chart': generate_status_chart(self.object),
+                'work_types_chart': generate_work_types_chart(self.object),
+                'team_workload_chart': generate_team_workload_chart(self.object)
+            })
 
         context['is_end_user'] = self.request.user.profile.role == UserRoleChoices.END_USER
         return context
