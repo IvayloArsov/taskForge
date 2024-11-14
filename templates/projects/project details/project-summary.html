@@ -1,7 +1,40 @@
 <div class="row g-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body p-4">
+                <h6 class="text-muted mb-1">Total Tickets</h6>
+                <h3 class="mb-0">{{ project_stats.total_tickets }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body p-4">
+                <h6 class="text-muted mb-1">Active</h6>
+                <h3 class="mb-0">{{ project_stats.active_tickets }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body p-4">
+                <h6 class="text-muted mb-1">Due in 7 days</h6>
+                <h3 class="mb-0">{{ project_stats.due_soon }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body p-4">
+                <h6 class="text-muted mb-1">Pending Bugs</h6>
+                <h3 class="mb-0">{{ project_stats.pending_bugs }}</h3>
+            </div>
+        </div>
+    </div>
+
     <div class="col-12 col-lg-6">
         <div class="card shadow-sm h-100">
-            <div class="card-body p-4">  
+            <div class="card-body p-4">
                 <h5 class="card-title mb-4">Priority Breakdown</h5>
                 {% if priority_chart %}
                     {{ priority_chart|safe }}
@@ -37,6 +70,8 @@
             </div>
         </div>
     </div>
+
+
 
     <div class="col-12">
         <div class="card shadow-sm">

@@ -176,6 +176,7 @@ class BugReportDenyView(LoginRequiredMixin, View):
         if not request.user.is_staff:
             raise PermissionDenied
 
+        # marks the bug report as closed and still saves it to the DB
         bug = get_object_or_404(BugReport, pk=pk)
         bug.is_approved = False
         bug.status = 'closed'

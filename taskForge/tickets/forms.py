@@ -1,8 +1,11 @@
+from django.contrib.auth import get_user_model
+
 from .models import Ticket, BugReport
 from django import forms
 from taskForge.projects.models import Project
 from ..accounts.choices import UserRoleChoices
-from ..accounts.models import Profile
+
+User = get_user_model()
 
 
 class TicketForm(forms.ModelForm):
@@ -51,21 +54,25 @@ class TicketForm(forms.ModelForm):
             'class': 'form-control'
         })
 
-        if user and not user.is_staff:
-            self.fields['project'].queryset = Project.objects.filter(members=user)
-            # only shows project members in the assigned_to field
-            project = self.instance.project if self.instance.pk else None
-            if project:
-                self.fields['assigned_to'].queryset = project.members.all()
-
-        if initial_project_id:
-            # selects the same project when a ticket is being created from the project/id/details view
+        # Setting the project in the "project" field and
+        # setting only developers to be selectable when assigning a ticket
+        project = None
+        if self.instance.pk and self.instance.project:
+            project = self.instance.project
+        elif initial_project_id:
             try:
                 project = Project.objects.get(pk=initial_project_id)
                 self.fields['project'].initial = project
-                self.fields['assigned_to'].queryset = project.members.all()
             except Project.DoesNotExist:
                 pass
+
+        if project:
+            self.fields['assigned_to'].queryset = User.objects.filter(
+                profile__role=UserRoleChoices.DEVELOPER,
+                projects=project
+            )
+        if user and not user.is_staff:
+            self.fields['project'].queryset = Project.objects.filter(members=user)
 
         self.fields['due_date'].help_text = "When should this ticket be completed?"
         self.fields['assigned_to'].help_text = "Who should work on this ticket?"

@@ -3,6 +3,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy
 from django.utils import timezone
 
+from ..analytics.utils import calculate_project_stats
 from taskForge.accounts.choices import UserRoleChoices
 from taskForge.projects.analytics.charts import (
     generate_priority_chart,
@@ -121,12 +122,19 @@ class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             ).order_by(sort_field)
 
         elif view_type == 'summary':
-            context.update({
-                'priority_chart': generate_priority_chart(self.object),
-                'status_chart': generate_status_chart(self.object),
-                'work_types_chart': generate_work_types_chart(self.object),
-                'team_workload_chart': generate_team_workload_chart(self.object)
-            })
+            try:
+                from ..analytics.utils import calculate_project_stats
+                context['project_stats'] = calculate_project_stats(self.object)
+
+                context.update({
+                    'priority_chart': generate_priority_chart(self.object),
+                    'status_chart': generate_status_chart(self.object),
+                    'work_types_chart': generate_work_types_chart(self.object),
+                    'team_workload_chart': generate_team_workload_chart(self.object)
+                })
+            except Exception as e:
+                print(f"Error generating analytics: {e}")
+                context['analytics_error'] = "Unable to load analytics data"
 
         context['is_end_user'] = self.request.user.profile.role == UserRoleChoices.END_USER
         return context
