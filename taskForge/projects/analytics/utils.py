@@ -69,21 +69,34 @@ def get_team_workload_data(project):
 
     team_data = []
     developers = project.members.filter(profile__role=UserRoleChoices.DEVELOPER)
+    unassigned_count = project.tickets.filter(assigned_to=None).count()
+
+    total_tickets = project.tickets.filter(
+        status__in=['open', 'in_progress']
+
+    ).count()
+    unassigned_percentage = (unassigned_count/total_tickets*100) if total_tickets > 0 else 0
+
+    team_data.append({
+        'Member':'Unassigned',
+        'Work Count': unassigned_percentage,
+        'Work Percentage': unassigned_percentage,
+        'Label': f"{unassigned_count} ({unassigned_percentage:.1f})"
+    })
 
     for member in developers:
+        assigned_count = project.tickets.filter(
+            assigned_to=member,
+            status__in=['open', 'in_progress']
+
+        ).count()
+        percentage = (assigned_count/total_tickets*100) if total_tickets > 0 else 0
         team_data.append({
             'Member': member.get_full_name(),
-            'Active Tickets': project.tickets.filter(
-                assigned_to=member,
-                status__in=['open', 'in_progress']
-            ).count(),
-            'Total Assigned': project.tickets.filter(
-                assigned_to=member
-            ).count(),
-            'Bug Tickets Assigned': project.tickets.filter(
-                assigned_to=member,
-                is_bug_ticket=True,
-            ).count()
+            'Work Count': assigned_count,
+            'Work Percentage': percentage,
+            'Label': f"{assigned_count} ({percentage:.1f}%)"
+
         })
 
     cache.set(cache_key, team_data, CACHE_TIMEOUT)

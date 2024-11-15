@@ -2,74 +2,88 @@
 {% load static %}
 {% block content %}
 
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h2 class="card-title mb-4">Create New Project</h2>
-                    
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.name.id_for_label }}" class="form-label">Project Name</label>
-                            {{ form.name }}
-                            {% if form.name.errors %}
-                                <div class="text-danger small mt-1">
-                                    {% for error in form.name.errors %}
-                                        {{ error }}
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4">Create New Project</h2>
+
+                        <form method="post">
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">Project Name</label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.name.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.description.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.lead_by.id_for_label }}" class="form-label">Project Lead</label>
+                                {{ form.lead_by }}
+                                {% if form.lead_by.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.lead_by.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+
+                            <div class="mb-4">
+                                <label class="form-label">Team Members</label>
+                                <div class="row g-3">
+                                    {% for checkbox in form.members %}
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                {{ checkbox.tag }}
+                                                <label class="form-check-label" for="{{ checkbox.id_for_label }}">
+                                                    {{ checkbox.choice_label }}
+                                                </label>
+                                            </div>
+                                        </div>
                                     {% endfor %}
                                 </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
-                            {{ form.description }}
-                            {% if form.description.errors %}
-                                <div class="text-danger small mt-1">
-                                    {% for error in form.description.errors %}
-                                        {{ error }}
-                                    {% endfor %}
+                                {% if form.members.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.members.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text">
+                                    Select team members (developers and end users)
                                 </div>
-                            {% endif %}
-                        </div>
+                            </div>
 
-                        <div class="mb-3">
-                            <label for="{{ form.lead_by.id_for_label }}" class="form-label">Project Lead</label>
-                            {{ form.lead_by }}
-                            {% if form.lead_by.errors %}
-                                <div class="text-danger small mt-1">
-                                    {% for error in form.lead_by.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="{{ form.members.id_for_label }}" class="form-label">Team Members</label>
-                            {{ form.members }}
-                            {% if form.members.errors %}
-                                <div class="text-danger small mt-1">
-                                    {% for error in form.members.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <div class="form-text">Hold Ctrl/Cmd to select multiple members</div>
-                        </div>
-
-                        <div class="d-flex justify-content-end gap-2">
-                            <a href="{% url 'projects:list' %}" class="btn btn-outline-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Create Project</button>
-                        </div>
-                    </form>
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'projects:list' %}" class="btn btn-outline-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-primary">Create Project</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
 {% endblock %}

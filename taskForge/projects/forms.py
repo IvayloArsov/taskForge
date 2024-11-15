@@ -18,6 +18,11 @@ class ProjectForm(forms.ModelForm):
             'lead_by',
             'members'
         ]
+        widgets  = {
+            'members': forms.CheckboxSelectMultiple(attrs={
+                'class': 'form-check-input'
+            })
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,12 +51,8 @@ class ProjectForm(forms.ModelForm):
             'class': 'form-control'
         })
 
-        # filter out only developers to be selectable for this field
-        member_queryset = User.objects.filter(id__in=[user.id for user in member_users])
-        self.fields['members'].queryset = member_queryset
+        # filter out only developers & end users to be selectable for this field
+
+        self.fields['members'].queryset = User.objects.filter(id__in=[user.id for user in member_users])
         self.fields['members'].label_from_instance = lambda \
             user: f"{user.get_full_name()} ({user.profile.get_role_display()})"
-        self.fields['members'].widget.attrs.update({
-            'class': 'form-control',
-            'size': '5'
-        })

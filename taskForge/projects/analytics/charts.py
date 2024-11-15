@@ -6,8 +6,6 @@ from .utils import (
     get_work_types_data,
     get_team_workload_data
 )
-from ...accounts.choices import UserRoleChoices
-
 
 def generate_priority_chart(project):
     tickets = project.tickets.all()
@@ -117,38 +115,20 @@ def generate_work_types_chart(project):
 
 
 def generate_team_workload_chart(project):
-    team_data = []
-    developers = project.members.filter(profile__role=UserRoleChoices.DEVELOPER)
-    unassigned_count = project.tickets.filter(assigned_to=None).count()
-
-    total_tickets = project.tickets.count()
-    unassigned_percentage = (unassigned_count/total_tickets*100) if total_tickets > 0 else 0
-
-    team_data.append({
-        'Member':'Unassigned',
-        'Work': unassigned_percentage
-    })
-
-    for member in developers:
-        assigned_count = project.tickets.filter(assigned_to=member).count()
-        percentage = (assigned_count/total_tickets*100) if total_tickets > 0 else 0
-        team_data.append({
-            'Member': member.get_full_name(),
-            'Work': percentage
-        })
+    team_data = get_team_workload_data(project)
 
     if team_data:
         df = pd.DataFrame(team_data)
         fig = px.bar(
             df,
-            x='Work',
+            x='Work Count',
             y='Member',
-            text='Work',
+            text='Label',
             orientation='h'
         )
 
         fig.update_traces(
-            texttemplate='%{text:.0f}%',
+            texttemplate='%{text}%',
             textposition='auto',
         )
 
@@ -159,7 +139,7 @@ def generate_team_workload_chart(project):
             title_font_color='#94a3b8',
             legend_font_color='#94a3b8',
             template='plotly_dark',
-            xaxis_title="Workload (%)",
+            xaxis_title="Workload",
             yaxis_title=None,
             showlegend=False
         )
