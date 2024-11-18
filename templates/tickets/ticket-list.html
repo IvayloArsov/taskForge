@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 
-    <div class="container py-4">
+    <div class="container py-4 user-select-none">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Tickets</h2>
             {% if not user.profile.role == 'end_user' %}
