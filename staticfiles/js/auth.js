@@ -1,4 +1,4 @@
-// Password visibility on toggle for login/registration forms
+// Password visibility on toggle for login forms
 
 
 document.addEventListener('DOMContentLoaded', function () {
