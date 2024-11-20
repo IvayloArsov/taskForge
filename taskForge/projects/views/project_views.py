@@ -3,7 +3,6 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy
 from django.utils import timezone
 
-from ..analytics.utils import calculate_project_stats
 from taskForge.accounts.choices import UserRoleChoices
 from taskForge.projects.analytics.charts import (
     generate_priority_chart,

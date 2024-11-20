@@ -24,6 +24,13 @@
                             <h6 class="text-muted">Role</h6>
                             <span class="badge bg-primary">{{ profile.get_role_display }}</span>
                         </div>
+                        {% if user == profile.user %}
+                            <div class="mt-4">
+                                <a href="{% url 'accounts:password_reset' %}" class="btn btn-outline-primary btn-sm">
+                                    Reset Password
+                                </a>
+                            </div>
+                        {% endif  %}
 
                         {% if profile.project %}
                             <div class="mb-3">

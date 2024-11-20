@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    <h2>New Ticket Assignment</h2>
+    <p>Hi {{ user.get_full_name }},</p>
+    <p>You have been assigned to ticket: <strong>{{ ticket.title }}</strong></p>
+    <p>Project: {{ ticket.project.name }}</p>
+    <p>Priority: {{ ticket.get_priority_display }}</p>
+    <p>Due Date: {% if ticket.due_date %}{{ ticket.due_date|date:"M d, Y" }}{% else %}No deadline set{% endif %}</p>
+    <p><a href="{{ ticket_url }}">View Ticket Details</a></p>
+</body>
+</html>

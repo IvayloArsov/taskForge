@@ -1,16 +1,14 @@
-from itertools import chain
-
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django.utils.translation.template import context_re
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 
 from .forms import TicketForm, BugReportForm
 from .models import Ticket, BugReport
 from taskForge.projects.models import Project
 from ..accounts.choices import UserRoleChoices
+from ..accounts.notifications import EmailNotifier
 from ..comments.forms import CommentForm
 
 
@@ -66,9 +64,13 @@ class TicketCreateView(LoginRequiredMixin, CreateView):
             kwargs['initial_project_id'] = project_id
         return kwargs
 
+    # rework this if emailing doesnt work
     def form_valid(self, form):
         form.instance.created_by = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        if form.instance.assigned_to:
+            EmailNotifier.send_ticket_assignment(self.object, form.instance.assigned_to)
+        return response
 
     def get_success_url(self):
         return f"{reverse_lazy('projects:details', kwargs={'pk': self.object.project.pk})}?view=board"
@@ -97,6 +99,15 @@ class TicketUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return f"{reverse_lazy('projects:details', kwargs={'pk': self.object.project.pk})}?view=board"
 
+    def form_valid(self, form):
+        current_ticket = Ticket.objects.get(pk=self.object.pk)
+        response = super().form_valid(form)
+        new_assigned = form.instance.assigned_to
+
+        if new_assigned and current_ticket.assigned_to != new_assigned:
+            EmailNotifier.send_ticket_assignment(self.object, new_assigned)
+
+        return response
 
 class TicketDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Ticket

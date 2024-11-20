@@ -77,17 +77,16 @@
                             <div class="form-text">
                                 Select team members (developers and end users)
                             </div>
-                    </div>
 
-                    <div class="d-flex justify-content-end gap-2">
-                        <a href="{% url 'projects:details' project.pk %}" class="btn btn-outline-secondary">Cancel</a>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'projects:details' project.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
                     </div>
-                    </form>
                 </div>
             </div>
         </div>
-    </div>
     </div>
 
     <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
@@ -112,3 +111,5 @@
         </div>
     </div>
 {% endblock %}
+
+

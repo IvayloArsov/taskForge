@@ -1,0 +1,10 @@
+Hi {{ user.get_full_name }},
+
+You have been assigned to ticket: {{ ticket.title }}
+
+Project: {{ ticket.project.name }}
+Priority: {{ ticket.get_priority_display }}
+Due Date: {% if ticket.due_date %}{{ ticket.due_date|date:"M d, Y" }}{% else %}No deadline set{% endif %}
+
+View ticket at: {{ ticket_url }}
+
