@@ -26,7 +26,10 @@ def generate_priority_chart(project):
             "urgent": "#dc2626"
         }
     )
-    fig.update_layout(template='plotly_dark', paper_bgcolor='rgba(0,0,0,0)')
+    fig.update_layout(
+        template='plotly_dark',
+        paper_bgcolor='rgba(0,0,0,0)',
+    )
     return fig.to_html()
 
 
